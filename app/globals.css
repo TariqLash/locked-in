@@ -1,0 +1,32 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+
+body, html{
+  height: 100%;
+  background-color: black;
+  color: white;
+}
+.navBorder{
+  border-bottom: 1px solid rgb(50, 50, 50);
+}
+.subtitle{
+  line-height: 2rem;
+  font-size: 0.9rem;
+  color: rgb(150, 150, 150);
+}
+
+
+.authInput::placeholder{
+  color:  rgb(150, 150, 150)  !important;
+}
+
+.grayBorder{
+  border: 1px solid rgb(50, 50, 50);
+}
+
+.divider{
+  height: 1px;
+  background-color: rgb(50, 50, 50);
+}
