@@ -1,3 +1,4 @@
+
 import { getSession } from '@/lib/getSession';
 import React from 'react'
 
@@ -7,8 +8,8 @@ const Home = async() => {
   console.log(user);
 
   return (
-    <div className='pt-20'>Home
-    
+    <div >
+    Home
     </div>
   )
 }

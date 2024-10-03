@@ -28,8 +28,7 @@ const Navbar = async () => {
           </>
         ) : (
           <>
-            <li><Link href="/private/dashboard">dashboard</Link></li>
-            <li><Link href="/private/settings">settings</Link></li>
+            <Button><Link href="/private/dashboard">Dashboard</Link></Button>
             <form action={async () => {
               'use server'
               await signOut(); 
