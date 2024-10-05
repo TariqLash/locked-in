@@ -24,17 +24,17 @@ const Settings = async() => {
         </tr>
     </thead>
     <tbody>
-      {allUsers?.map((user) => (
-        <tr key={user._id}>
-          <td>{user.firstName}</td>
-          <td>{user.lastName}</td>
-          <td>
-            <form action={async () => {
-              'use server';
-              await User.findByIdAndDelete(user._id); 
-            }}>
-              <button>Delete</button>
-            </form>
+        {allUsers?.map((user) => (
+          <tr key={user._id}>
+            <td>{user.firstName}</td>
+            <td>{user.lastName}</td>
+            <td>
+              <form action={async () => {
+                'use server';
+                await User.findByIdAndDelete(user._id);
+              }}>
+                <button>Delete</button>
+              </form>
           </td>
           </tr>
       ))}

@@ -42,7 +42,6 @@ const register = async (formData: FormData) => {
   if (existingUser) throw new Error("User already exists");
 
   const hashedPassword = await hash(password, 12);
-
   await User.create({ firstName, lastName, email, password: hashedPassword });
   console.log(`User created successfully 🥂`);
   redirect("/login");

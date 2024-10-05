@@ -1,7 +1,11 @@
+import { fetchAllHabits } from '@/action/habit';
 import Habitcard from '@/components/habit/Habitcard';
+import HabitList from '@/components/habit/HabitList';
+import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { getSession } from '@/lib/getSession';
+import Link from 'next/link';
 import { redirect } from 'next/navigation';
 import React from 'react'
 
@@ -11,13 +15,18 @@ const Dashboard = async () => {
     const user = session?.user;
     if (!user) redirect("/");
 
+    const allHabits = await fetchAllHabits();
+
     return (
 
         <div className='pt-24 px-4 flex justify-center flex-wrap'>
-            <Habitcard />
-            <Habitcard />
-            <Habitcard />
+            <Button variant={'outline'} className='rounded bg-white text-black h-12 my-3'>
+                <Link href="/private/addHabit">+ Add Habit</Link>
+            </Button>
+            <HabitList />
         </div>
+
+
         // <div>
         //     <div>
         //         <div>
