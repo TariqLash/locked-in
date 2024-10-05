@@ -29,17 +29,17 @@ export default function Habitcard({ habitName }) {
         <CardContent className='flex w-full justify-around'>
           <div className='flex flex-col items-center'>
             {/* Use streak from props */}
-            <h2 className='text-5xl font-bold'>7</h2>
+            <h2 className='text-5xl font-bold'>0</h2>
             <CardDescription>Streak</CardDescription>
           </div>
           <div className='flex flex-col items-center'>
             {/* Use consistency from props */}
-            <h2 className='text-5xl font-bold'>88%</h2>
+            <h2 className='text-5xl font-bold'>0%</h2>
             <CardDescription>Consistency</CardDescription>
           </div>
           <div className='flex flex-col items-center'>
             {/* Use checkIns from props */}
-            <h2 className='text-5xl font-bold'>250</h2>
+            <h2 className='text-5xl font-bold'>0</h2>
             <CardDescription>Check-Ins</CardDescription>
           </div>
         </CardContent>

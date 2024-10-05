@@ -25,8 +25,8 @@ const AddHabit = async () => {
         <div className='pb-44 pt-20 h-screen flex flex-col items-center justify-center '>
             <h1 className='text-2xl'>Hello {currUser}</h1>
             <form action={addHabit}>
-                <Input id='habitName' placeholder='Habit habitName' type='text' name='habitName' />
-                <Input id='description' placeholder='Habit Description' type='text' name='description' />
+                <Input id='habitName' placeholder='Enter Habit' type='text' name='habitName' />
+                <Input id='description' placeholder='Enter Description' type='text' name='description' />
                 <Button variant="outline" className='bg-white text-black rounded mb-3 w-full h-12'>
                     Sign Up &rarr;
                 </Button>
