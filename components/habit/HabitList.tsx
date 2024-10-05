@@ -15,6 +15,7 @@ const HabitList = async() => {
   return (
     <div className='flex flex-wrap w-full justify-center'>
       {/* Map over allHabits and pass data as props to Habitcard */}
+      All Habits
       {allHabits?.map((habit:any) => (
           <div className=''>
               <Habitcard
