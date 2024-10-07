@@ -2,7 +2,7 @@
 import React from 'react'
 import { HeatMapGrid } from 'react-grid-heatmap'
 
-const xLabels = new Array(21).fill(0).map((_, i) => `${i}`)
+const xLabels = new Array(31).fill(0).map((_, i) => `${i}`)
 const yLabels = ['Su', 'M', 'Tu', 'W', 'Th', 'F','Sa']
 const data = new Array(yLabels.length)
   .fill(0)
@@ -14,7 +14,7 @@ const data = new Array(yLabels.length)
 
 const App = () => {
   return (
-    <div >
+    <div className='w-full pl-1'>
       <HeatMapGrid
         data={data}
         // xLabels={xLabels}
@@ -37,11 +37,11 @@ const App = () => {
         //   background: `rgb(12, 160, 44, ${ratio})`,
           fontSize: '.8rem',
           color: `rgb(0, 0, 0, ${ratio / 2 + 0.4})`,
-          margin: `1.5px`,
+          margin: `1px`,
           border: `0px`,
           borderRadius: `2px`,
         })}
-        cellHeight='0.8rem'
+        cellHeight='0.7rem'
         // xLabelsPos='bottom'
         onClick={(x, y) => alert(`Clicked (${x}, ${y})`)}
         // yLabelsPos='left'

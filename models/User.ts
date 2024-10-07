@@ -8,6 +8,12 @@ const userSchema = new mongoose.Schema({
     role:{type:String, default:'user'},
     image:{type:String},
     authProviderId: {type: String},
+
+    // Array of references to habits
+    habits: [{ 
+        type: mongoose.Schema.Types.ObjectId, 
+        ref: 'Habit'  // This refers to the 'Habit' model/collection
+    }]
 });
 
 export const User = mongoose.models?.User || mongoose.model("User", userSchema);

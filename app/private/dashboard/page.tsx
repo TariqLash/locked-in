@@ -1,4 +1,6 @@
 import { fetchAllHabits } from '@/action/habit';
+import Footbar from '@/components/auth/Footbar';
+import Navbar from '@/components/auth/Navbar';
 import Habitcard from '@/components/habit/Habitcard';
 import HabitList from '@/components/habit/HabitList';
 import { Button } from '@/components/ui/button';
@@ -18,13 +20,12 @@ const Dashboard = async () => {
     const allHabits = await fetchAllHabits();
 
     return (
-
-        <div className='pt-24 px-4 flex justify-center flex-wrap'>
-            <Button variant={'outline'} className='rounded bg-white text-black h-12 my-3'>
-                <Link href="/private/addHabit">+ Add Habit</Link>
-            </Button>
+        <div className='bg-gray-900'>
+            <Navbar />
             <HabitList />
+            <Footbar/>
         </div>
+
 
 
         // <div>

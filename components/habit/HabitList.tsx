@@ -13,19 +13,19 @@ const HabitList = async() => {
     const allHabits = await fetchAllHabits();
 
   return (
-    <div className='flex flex-wrap w-full justify-center'>
+    <div className=''>
+<div className='  flex flex-col items-center p-4'>
       {/* Map over allHabits and pass data as props to Habitcard */}
-      All Habits
       {allHabits?.map((habit:any) => (
-          <div className=''>
               <Habitcard
                   key={habit._id}
-                  habitName={habit.habitName} // Pass the habit name
+                  habitName={habit.habitName} // Pass the habit name\
               />
-          </div>
-       
       ))}
     </div>
+    </div>
+ 
+   
   )
 }
 

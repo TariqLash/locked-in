@@ -15,15 +15,15 @@ import { Checkbox } from "@/components/ui/checkbox"
 export default function Habitcard({ habitName }) {
   return (
     <>
-      <Card className='w-96 h-fit flex flex-col justify-evenly rounded-xl grayBorder m-5'>
+      <Card className='w-full flex flex-col justify-evenly rounded-xl grayBorder mb-4 habitCard bg-gray-950'>
         <CardHeader>
           <div className='flex justify-between items-center'>
             <div className='flex items-center w-fit'>
-              <button><EllipsisVertical className='mr-3 w-5' /></button>
+              <button><EllipsisVertical className='mr-4 w-5' /></button>
               {/* Use habitName from props */}
               <CardTitle className='text-3xl flex items-center'>{habitName}</CardTitle>
             </div>
-            <Checkbox className='w-6 h-6 ml-14 rounded' />
+            <Checkbox className='w-6 h-6 rounded' />
           </div>
         </CardHeader>
         <CardContent className='flex w-full justify-around'>
@@ -42,9 +42,11 @@ export default function Habitcard({ habitName }) {
             <h2 className='text-5xl font-bold'>0</h2>
             <CardDescription>Check-Ins</CardDescription>
           </div>
+          
         </CardContent>
+        
         <CardFooter>
-          <Heatmap />
+        <Heatmap />  
         </CardFooter>
       </Card>
     </>

@@ -11,6 +11,9 @@ body, html{
 .navBorder{
   border-bottom: 1px solid rgb(50, 50, 50);
 }
+.footBorder{
+  border-top: 1px solid rgb(50, 50, 50);
+}
 .subtitle{
   line-height: 2rem;
   font-size: 0.9rem;
@@ -29,4 +32,17 @@ body, html{
 .divider{
   height: 1px;
   background-color: rgb(50, 50, 50);
+}
+
+.habitCard{
+  height: 22rem;
+}
+
+html {
+  overflow: scroll;
+  overflow-x: hidden;
+}
+::-webkit-scrollbar {
+  width: 0;  /* Remove scrollbar space */
+  background: transparent;  /* Optional: just make scrollbar invisible */
 }

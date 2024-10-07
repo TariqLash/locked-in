@@ -11,35 +11,20 @@ const Navbar = async () => {
   const user = session?.user;
 
   return (
-    <nav className='absolute navBorder w-full flex justify-between items-center h-20 px-12 bg-black'>
-      <Link href="/">
+    <nav className='sticky top-0 navBorder w-full flex justify-between items-center h-14 px-4 bg-gray-950 '>
+      
+      <Link href="/private/addHabit" className='w-1/3'>+ Add Habit</Link>
+      <h1 className='w-1/3 text-center'>3 HABITS</h1>
+      <Link href="/private/settings" className='w-1/3 text-right'>Settings</Link>
+      {/* <Link href="/">
         <Image
           src="/images/logoDark.png" // Use the path relative to the `public` folder
           alt="My Image"
           width={40}  // Specify width
           height={40} // Specify height
         />
-      </Link>
-      <ul className='flex items-center w-fit h-full'>
-        {!user ? (
-          <>
-          <Button className='rounded mr-4 h-12 w-18'><Link href="/login">Log In</Link></Button>
-          <Button className='bg-white hover:bg-gray-300 text-black rounded-full h-12 w-18'><Link href="/register">Sign Up</Link></Button>
-          </>
-        ) : (
-          <>
-            <Button><Link href="/private/dashboard">Dashboard</Link></Button>
-            <form action={async () => {
-              'use server'
-              await signOut(); 
-            }}>
-              <Button type='submit' variant={"ghost"}>Logout</Button>
-            </form>
-          </>
-        )}
-
-
-      </ul>
+      </Link> */}
+      
     </nav>
   )
 }

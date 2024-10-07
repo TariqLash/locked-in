@@ -1,7 +1,11 @@
 "use server";
 import connectDB from "@/lib/db";
+import { getSession } from "@/lib/getSession";
 import { Habit } from "@/models/Habit";
+import { User } from "@/models/User";
 import { redirect } from "next/navigation";
+
+
 
 // const login = async (formData: FormData) => {
 //   const email = formData.get("email") as string;
@@ -25,6 +29,14 @@ const addHabit = async (formData: FormData) => {
   const habitName = formData.get("habitName") as string;
   const description = formData.get("description") as string;
 
+  const session = await getSession();
+  const user = session?.user;
+  // if(user) redirect("/");
+  console.log("Session:", session);
+  console.log("User object:", user);
+  console.log("User ID:", user?.id);
+
+
   if (!habitName || !description) {
     throw new Error("Please fill all fields");
   }
@@ -36,12 +48,22 @@ const addHabit = async (formData: FormData) => {
 //   if (existingUser) throw new Error("User already exists");
 
 //   const hashedPassword = await hash(password, 12);
-  await Habit.create({ habitName, description });
-  console.log(`Habit created successfully 🥂`);
-  console.log(habitName);
-  console.log(description);
+  const newHabit = await Habit.create({ habitName, description });
+
+  const updateResult = await User.updateOne(
+    { _id: user?.id },
+    { $push: { habits: newHabit._id } }
+  );
+
+  console.log(`Update Result: `, updateResult);
+
   redirect("/private/dashboard");
+
 };
+
+// Step 3: Update the user's habits array
+
+
 
 // const fetchAllUsers = async () => {
 //   await connectDB();
