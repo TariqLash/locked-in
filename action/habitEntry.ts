@@ -6,28 +6,10 @@ import { User } from "@/models/User";
 import { redirect } from "next/navigation";
 
 
+const addHabitEntry = async (formData: FormData) => {
 
-// const login = async (formData: FormData) => {
-//   const email = formData.get("email") as string;
-//   const password = formData.get("password") as string;
-
-//   try {
-//     await signIn("credentials", {
-//       redirect: false,
-//       callbackUrl: "/",
-//       email,
-//       password,
-//     });
-//   } catch (error) {
-//     const someError = error as CredentialsSignin;
-//     return someError.cause;
-//   }
-//   redirect("/");
-// };
-
-const addHabit = async (formData: FormData) => {
-  const habitName = formData.get("habitName") as string;
-  const description = formData.get("description") as string;
+//   const habitName = formData.get("completed") as boolean;
+  
 
   const session = await getSession();
   const user = session?.user;
@@ -45,12 +27,6 @@ const addHabit = async (formData: FormData) => {
   }
 
   await connectDB();
-
-  // existing user
-  //   const existingUser = await User.findOne({ email });
-  //   if (existingUser) throw new Error("User already exists");
-
-  //   const hashedPassword = await hash(password, 12);
   const newHabit = await Habit.create({ habitName, description, createdBy: userRecord?._id });
 
 
@@ -65,20 +41,10 @@ const addHabit = async (formData: FormData) => {
 
 };
 
-// Step 3: Update the user's habits array
-
-
-
-// const fetchAllUsers = async () => {
-//   await connectDB();
-//   const users = await User.find({});
-//   return users;
-// };
-
 const fetchAllHabits = async () => {
   await connectDB();
   const habits = await Habit.find({});
   return habits;
 };
 
-export { addHabit, fetchAllHabits };
+export { addHabitEntry};

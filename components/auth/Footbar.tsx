@@ -12,25 +12,25 @@ const Navbar = async () => {
     const user = session?.user;
 
     return (
-        <nav className='sticky bottom-0 footBorder w-full flex justify-around items-center h-16 px-4 bg-gray-950 '>
-            <div className='flex flex-col justify-center w-1/3 pb-2 '>
-            <Button className=''>
-                <SquareCheckBig className='text-xl b'/>
-            </Button>
-            <caption className='text-xs'>Habits</caption>
-            </div>
-            <div className='flex flex-col justify-center w-1/3 pb-2 border-x-2 border-gray-900'>
-            <Button className=''>
-                <Contact className='text-xl b'/>
-            </Button>
-            <caption className='text-xs'>Friends</caption>
-            </div>
-            <div className='flex flex-col justify-center w-1/3 pb-2 '>
-            <Button className=''>
-                <Trophy className='text-xl b'/>
-            </Button>
-            <caption className='text-xs'>Leaderboard</caption>
-            </div>
+        <nav className='fixed bottom-0 footBorder w-full flex justify-around items-center h-16 px-4 bg-gray-950 '>
+            <a href='/' className='flex flex-col justify-center items-center w-1/3 pb-2 '>
+                <Button className=''>
+                    <SquareCheckBig className='text-xl b' />
+                </Button>
+                <p className='text-xs'>Habits</p>
+            </a>
+            <a href='/' className='flex flex-col justify-center items-center w-1/3 pb-2 border-x-2 border-gray-900'>
+                <Button className=''>
+                    <Contact className='text-xl b' />
+                </Button>
+                <p className='text-xs'>Friends</p>
+            </a>
+            <a href='/' className='flex flex-col justify-center items-center w-1/3 pb-2 '>
+                <Button className=''>
+                    <Trophy className='text-xl b' />
+                </Button>
+                <p className='text-xs'>Leaderboard</p>
+            </a>
 
         </nav>
     )

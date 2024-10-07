@@ -1,16 +1,16 @@
 
 import { getSession } from '@/lib/getSession';
+import { redirect } from 'next/navigation';
 import React from 'react'
 
-const Home = async() => {
+const Home = async () => {
   const session = await getSession();
   const user = session?.user;
-  console.log(user);
+  if (user) redirect("/private/dashboard");
 
   return (
-    <div >
-    Home
-    </div>
+  <div>HOME</div>
+
   )
 }
 
