@@ -20,7 +20,7 @@ const Dashboard = async () => {
     const allHabits = await fetchAllHabits();
 
     return (
-        <div className='bg-gray-900'>
+        <div className='bg-black'>
             <Navbar />
             <HabitList />
             <Footbar/>
