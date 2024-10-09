@@ -101,7 +101,21 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           throw new Error("Error while creating user");
         }
       }
+      if (account?.provider === "github") {
+        try {
+          const { email, name, id } = user;
+          await connectDB();
+          const alreadyUser = await User.findOne({ email });
 
+          if (!alreadyUser) {
+            await User.create({ email, name, authProviderId: id }); // Ensure you have a field in your model for authProviderId
+          } else {
+            return true;
+          }
+        } catch (error) {
+          throw new Error("Error while creating user");
+        }
+      }
       if (account?.provider === "credentials") {
         return true;
       } else {

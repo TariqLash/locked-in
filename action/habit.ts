@@ -2,6 +2,7 @@
 import connectDB from "@/lib/db";
 import { getSession } from "@/lib/getSession";
 import { Habit } from "@/models/Habit";
+import { HabitEntry } from "@/models/HabitEntry";
 import { User } from "@/models/User";
 import { redirect } from "next/navigation";
 
@@ -51,8 +52,11 @@ const addHabit = async (formData: FormData) => {
 
   //   const hashedPassword = await hash(password, 12);
   const newHabit = await Habit.create({ habitName, description, createdBy: userRecord?._id });
-
-
+  const newHabitEntry = await HabitEntry.create({
+                    habit: newHabit._id,
+                    user: userRecord?._id,
+                    completed: false,
+                });
   const updateResult = await User.updateOne(
     { _id: userRecord?._id },
     { $push: { habits: newHabit._id } }
@@ -78,4 +82,49 @@ const fetchAllHabits = async () => {
   return habits;
 };
 
-export { addHabit, fetchAllHabits };
+const fetchAllUserHabits = async (user) => {
+  await connectDB();
+  const userRecord = await User.findOne({ email: user?.email });  // Assuming user?.email exists in the session
+  const habits = await Habit.find({createdBy: userRecord?._id});
+  return habits;
+};
+
+const deleteHabit = async (habitId) => {
+  const session = await getSession();
+  const user = session?.user;
+
+  if (!user) {
+    throw new Error("User not authenticated");
+  }
+
+  await connectDB();
+
+  // Find the habit by ID
+  const habit = await Habit.findById(habitId);
+  if (!habit) {
+    throw new Error("Habit not found");
+  }
+
+  // Check if the habit was created by the current user
+  const userRecord = await User.findOne({ email: user?.email });
+  if (habit.createdBy.toString() !== userRecord?._id.toString()) {
+    throw new Error("Unauthorized to delete this habit");
+  }
+
+  // Delete associated entries for the habit
+  await HabitEntry.deleteMany({ habit: habitId });
+
+  // Delete the habit itself
+  await Habit.findByIdAndDelete(habitId);
+
+  // Optionally, you might want to remove the habit from the user's habits array
+  await User.updateOne(
+    { _id: userRecord?._id },
+    { $pull: { habits: habitId } } // Use $pull to remove the habit ID from the habits array
+  );
+
+  redirect("/private/dashboard");
+};
+
+// Export the deleteHabit function along with others
+export { addHabit, fetchAllHabits, fetchAllUserHabits, deleteHabit };

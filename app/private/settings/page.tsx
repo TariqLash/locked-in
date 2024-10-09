@@ -17,28 +17,17 @@ const Settings = async() => {
 
   // const allUsers = await fetchAllUsers();
 
-  return (<div>
-      <h1 className='m-8'>&larr; BACK</h1>
-      <ul className='flex items-center w-fit h-full ml-8'>
-    {!user ? (
-      <>
-      <Button className='rounded mr-4 h-12 w-18'><Link href="/login">Log In</Link></Button>
-      <Button className='bg-white hover:bg-gray-300 text-black rounded-full h-12 w-18'><Link href="/register">Sign Up</Link></Button>
-      </>
-    ) : (
-      <>
-        <Button><Link href="/private/dashboard">Dashboard</Link></Button>
-        <form action={async () => {
+  return (
+  <div>
+    <Button><Link href="/private/dashboard">&larr; Dashboard</Link></Button>
+    <ul className='flex items-center w-fit h-full ml-8'>
+    <form action={async () => {
           'use server'
           await signOut(); 
         }}>
           <Button type='submit' variant={"ghost"}>Logout</Button>
         </form>
-      </>
-    )}
-
-
-  </ul>
+    </ul>
   </div>
   
 //     <div className='pt-20'>

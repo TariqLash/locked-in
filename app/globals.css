@@ -35,7 +35,7 @@ body, html{
 }
 
 .habitCard{
-  height: 22rem;
+  width: 30rem;
 }
 
 html {
@@ -45,4 +45,17 @@ html {
 ::-webkit-scrollbar {
   width: 0;  /* Remove scrollbar space */
   background: transparent;  /* Optional: just make scrollbar invisible */
+}
+
+/* In styles.css or globals.css */
+.react-calendar-heatmap .color-empty {
+  fill: #343434 !important; /* Gray for empty squares */
+}
+
+.react-calendar-heatmap .color-completed {
+  fill: #44a340 !important; /* One color for completed squares */ 
+}
+
+.react-calendar-heatmap-month-label{
+  font-size: 8px !important;
 }

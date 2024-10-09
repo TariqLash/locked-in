@@ -23,7 +23,7 @@ const Dashboard = async () => {
         <div className='h-full'>
             <Navbar />
             <HabitList />
-            <Footbar/>
+            {/* <Footbar/> */}
         </div>
 
 

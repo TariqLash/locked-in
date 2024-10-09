@@ -22,10 +22,10 @@ const HabitList = async() => {
     // console.log("entries",userHabitEntries)
 
   return (
-    <div className='bg-black'>
-        <h1>{user?.email}'s Habit List</h1>
+    <div className='flex flex-col '>
+        <h1 className='mx-auto text-4xl mt-4'>{userRecord?.firstName}'s Habits:</h1>
 
-        <div className='flex flex-col items-center p-4'>
+        <div className='p-2 flex flex-wrap justify-center'>
                 {/* Map over all habits and pass data as props to HabitCard */}
                 {userHabits?.map(async(habit) => {
                     // Filter entries for the current habit
@@ -38,6 +38,7 @@ const HabitList = async() => {
                         <HabitCard
                             key={habitId}
                             habitName={habit.habitName} // Pass the habit name
+                            habitDesc={habit.description}
                             habitId={habitId}
                             entries={JSON.stringify(userHabitEntries)} // Pass the filtered entries for the current habit
                         />
