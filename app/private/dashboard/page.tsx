@@ -1,7 +1,7 @@
 import { fetchAllHabits } from '@/action/habit';
 import Footbar from '@/components/auth/Footbar';
 import Navbar from '@/components/auth/Navbar';
-import Habitcard from '@/components/habit/Habitcard';
+import Habitcard from '@/components/habit/HabitCard';
 import HabitList from '@/components/habit/HabitList';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'

@@ -2,49 +2,64 @@
 import connectDB from "@/lib/db";
 import { getSession } from "@/lib/getSession";
 import { Habit } from "@/models/Habit";
+import { HabitEntry } from "@/models/HabitEntry";
 import { User } from "@/models/User";
-import { redirect } from "next/navigation";
 
 
-const addHabitEntry = async (formData: FormData) => {
+const addHabitEntry = async (entryData) => {
+    // Ensure a fresh DB connection
+    await connectDB();
+  console.log('======================================================');
 
-//   const habitName = formData.get("completed") as boolean;
-  
+  // console.log('Habit ID:', entryData.habitId);
+  const checkHabit = entryData.habitId;
+  const habitName = await Habit.findOne({_id: entryData.habitId});
+  console.log("Habit Clicked: ",habitName.habitName)
 
   const session = await getSession();
   const user = session?.user;
 
-  //   console.log("Session:", session);
-  // console.log("User object:", user);
-
-  // Find the user by their unique email address
-  const userRecord = await User.findOne({ email: user?.email });  // Assuming user?.email exists in the session
-  console.log("ID: ",userRecord?._id);
-
-
-  if (!habitName || !description) {
-    throw new Error("Please fill all fields");
+  // Check if the user exists
+  const userRecord = await User.findOne({ email: user?.email });
+  if (!userRecord) {
+    console.error("User not found");
+    return; // Handle error (user not found)
   }
 
-  await connectDB();
-  const newHabit = await Habit.create({ habitName, description, createdBy: userRecord?._id });
+  console.log("User: ", userRecord.firstName);
+  // all habits
+  const allHabits = await Habit.find({ createdBy: userRecord._id }); // Adjust if habits are stored differently
 
+  const latestEntry = await HabitEntry.findOne({
+    habit: checkHabit,
+    user: userRecord._id,
+  })
+  .sort({ date: -1 }) // Sort by `date` in descending order for the latest entry
+  .exec();
 
-  const updateResult = await User.updateOne(
-    { _id: userRecord?._id },
-    { $push: { habits: newHabit._id } }
-  );
+  console.log("latest entry: ", latestEntry._id)
 
-  console.log(`Update Result: `, updateResult);
-
-  redirect("/private/dashboard");
+  if (latestEntry) {
+    // Toggle the completed status
+    latestEntry.completed = !latestEntry.completed;
+  
+    // Save the updated entry
+    await latestEntry.save();
+    
+    console.log(`Habit entry updated. Completed: ${latestEntry.completed}`);
+  } else {
+    console.log("No habit entries found.");
+  }
+  
+  console.log('======================================================');
+  
 
 };
 
-const fetchAllHabits = async () => {
+const fetchHabitEntries = async (habitId) => {
   await connectDB();
-  const habits = await Habit.find({});
-  return habits;
+  const allHabitEntries = await HabitEntry.find({habitId});
+  return allHabitEntries;
 };
 
-export { addHabitEntry};
+export { addHabitEntry, fetchHabitEntries };

@@ -37,7 +37,6 @@ const addHabit = async (formData: FormData) => {
 
   // Find the user by their unique email address
   const userRecord = await User.findOne({ email: user?.email });  // Assuming user?.email exists in the session
-  console.log("ID: ",userRecord?._id);
 
 
   if (!habitName || !description) {
@@ -58,8 +57,6 @@ const addHabit = async (formData: FormData) => {
     { _id: userRecord?._id },
     { $push: { habits: newHabit._id } }
   );
-
-  console.log(`Update Result: `, updateResult);
 
   redirect("/private/dashboard");
 

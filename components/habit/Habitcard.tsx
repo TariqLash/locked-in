@@ -1,3 +1,4 @@
+"use client"
 import React from 'react'
 import {
   Card,
@@ -10,9 +11,25 @@ import {
 import { EllipsisVertical } from 'lucide-react'
 import Heatmap from './Heatmap'
 import { Checkbox } from "@/components/ui/checkbox"
+import { addHabitEntry } from '@/action/habitEntry'
+import { Button } from '../ui/button'
 
 // Accept habit data as props
-export default function Habitcard({ habitName }) {
+export default function HabitCard({ habitId,habitName,entries }) {
+
+  const handleSubmit = async (event) => {
+    event.preventDefault(); // Prevent page reload
+
+    // Call addHabitEntry function, passing the habitId and other data
+    await addHabitEntry({
+      habitId, // Send the habitId
+      completed: true, // Example: mark as completed (you can modify this if needed)
+      created_at: new Date().toISOString(), // Example: current date and time
+    });
+
+    console.log('Habit entry added for habitId:', habitId);
+  };
+
   return (
     <>
       <Card className='w-full flex flex-col justify-evenly rounded-xl grayBorder mb-4 habitCard bg-gray-950'>
@@ -21,9 +38,13 @@ export default function Habitcard({ habitName }) {
             <div className='flex items-center w-fit'>
               <button><EllipsisVertical className='mr-4 w-5' /></button>
               {/* Use habitName from props */}
-              <CardTitle className='text-3xl flex items-center'>{habitName}</CardTitle>
+              <CardTitle className='text-3xl flex items-center'>{habitName}{habitId}</CardTitle>
             </div>
-            <Checkbox className='w-6 h-6 rounded' />
+            <form onSubmit={handleSubmit}>
+              <Button type="submit" variant="outline" className='bg-white text-black rounded mb-3 w-full h-12'>
+                Add Entry &rarr;
+              </Button>
+            </form>
           </div>
         </CardHeader>
         <CardContent className='flex w-full justify-around'>
@@ -46,7 +67,10 @@ export default function Habitcard({ habitName }) {
         </CardContent>
         
         <CardFooter>
-        <Heatmap />  
+
+
+
+        <Heatmap habitId={habitId} entries={entries}/>  
         </CardFooter>
       </Card>
     </>

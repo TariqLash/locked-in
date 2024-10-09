@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import Navbar from "@/components/auth/Navbar";
-
+import '@/lib/cron/habitCron';  // Import
 
 
 export const metadata: Metadata = {
