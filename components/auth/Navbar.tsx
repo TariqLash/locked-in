@@ -1,9 +1,6 @@
 import Link from 'next/link'
 import React from 'react'
-import { Button } from '../ui/button'
 import { getSession } from '@/lib/getSession';
-import { signOut } from '@/auth';
-import Image from 'next/image';
 import { Plus, Settings } from 'lucide-react';
 import { fetchAllUserHabits } from '@/action/habit';
 

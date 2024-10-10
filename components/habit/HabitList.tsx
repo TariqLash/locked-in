@@ -1,4 +1,3 @@
-import { fetchAllHabits } from '@/action/habit';
 import { getSession } from '@/lib/getSession';
 import { redirect } from 'next/navigation';
 import React from 'react'
@@ -6,7 +5,6 @@ import HabitCard from './HabitCard' // Import the Habitcard component
 import { Habit } from '@/models/Habit';
 import { User } from '@/models/User';
 import { HabitEntry } from '@/models/HabitEntry';
-import connectDB from '@/lib/db';
 
 const HabitList = async() => {
 
@@ -19,10 +17,11 @@ const HabitList = async() => {
     
     // const userHabitEntries = await HabitEntry.find({ user: userRecord?._id});
     // const userHabitEntries = await HabitEntry.find({ user: userRecord?._id, habitId: userHabits._id }); // Fetch entries for the current habit
+    // console.log("entries",userHabitEntries)
 
   return (
     <div className='flex flex-col '>
-        <h1 className='mx-auto text-4xl mt-4'>{userRecord?.firstName}'s Habits:</h1>
+        <h1 className='mx-auto text-4xl mt-4'>{userRecord?.firstName}&apos;s Habits:</h1>
 
         <div className='p-2 flex flex-wrap justify-center'>
                 {/* Map over all habits and pass data as props to HabitCard */}
@@ -31,6 +30,7 @@ const HabitList = async() => {
                     const userId = userRecord?._id.toString();
                     const habitId = habit._id.toString();
                     const userHabitEntries = await HabitEntry.find({ user: userId, habit: habitId}); // Fetch entries for the current habit
+                    // console.log("entries",userHabitEntries)
 
                     return (
                         <HabitCard

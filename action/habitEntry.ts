@@ -6,7 +6,7 @@ import { HabitEntry } from "@/models/HabitEntry";
 import { User } from "@/models/User";
 
 
-const completeHabit = async (entryData) => {
+const completeHabit = async (entryData:any) => {
     // Ensure a fresh DB connection
     await connectDB();
 
@@ -48,7 +48,7 @@ const completeHabit = async (entryData) => {
 
 };
 
-const fetchHabitEntries = async (habitId) => {
+const fetchHabitEntries = async (habitId:any) => {
   await connectDB();
   const allHabitEntries = await HabitEntry.find({habitId});
   return allHabitEntries;

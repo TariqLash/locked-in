@@ -1,8 +1,6 @@
-import { fetchAllUsers } from '@/action/user';
 import { signOut } from '@/auth';
 import { Button } from '@/components/ui/button';
 import { getSession } from '@/lib/getSession';
-import { User } from '@/models/User';
 import Link from 'next/link';
 import { redirect } from 'next/navigation';
 import React from 'react'
@@ -18,9 +16,9 @@ const Settings = async() => {
   // const allUsers = await fetchAllUsers();
 
   return (
-  <div>
+  <div className='h-screen'>
     <Button><Link href="/private/dashboard">&larr; Dashboard</Link></Button>
-    <ul className='flex items-center w-fit h-full ml-8'>
+    <ul className='flex justify-center items-center w-full h-96'>
     <form action={async () => {
           'use server'
           await signOut(); 

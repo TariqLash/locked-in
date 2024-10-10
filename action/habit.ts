@@ -82,14 +82,14 @@ const fetchAllHabits = async () => {
   return habits;
 };
 
-const fetchAllUserHabits = async (user) => {
+const fetchAllUserHabits = async (user:any) => {
   await connectDB();
   const userRecord = await User.findOne({ email: user?.email });  // Assuming user?.email exists in the session
   const habits = await Habit.find({createdBy: userRecord?._id});
   return habits;
 };
 
-const deleteHabit = async (habitId) => {
+const deleteHabit = async (habitId:any) => {
   const session = await getSession();
   const user = session?.user;
 

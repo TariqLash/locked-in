@@ -1,7 +1,6 @@
 import { register } from '@/action/user'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
 import { getSession } from '@/lib/getSession'
 import Link from 'next/link'
 import { redirect } from 'next/navigation'

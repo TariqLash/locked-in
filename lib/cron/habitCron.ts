@@ -40,7 +40,7 @@ const createHabitEntries = async () => {
 
         // Create a new habit entry for each habit
         for (const habit of habits) {
-            const newHabitEntry = await HabitEntry.create({
+            await HabitEntry.create({
                 habit: habit._id,
                 user: userRecord._id,
                 completed: false,

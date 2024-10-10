@@ -1,13 +1,6 @@
-import { fetchAllHabits } from '@/action/habit';
-import Footbar from '@/components/auth/Footbar';
 import Navbar from '@/components/auth/Navbar';
-import Habitcard from '@/components/habit/HabitCard';
 import HabitList from '@/components/habit/HabitList';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { getSession } from '@/lib/getSession';
-import Link from 'next/link';
 import { redirect } from 'next/navigation';
 import React from 'react'
 
@@ -16,8 +9,6 @@ const Dashboard = async () => {
     const session = await getSession();
     const user = session?.user;
     if (!user) redirect("/");
-
-    const allHabits = await fetchAllHabits();
 
     return (
         <div className='h-full'>
