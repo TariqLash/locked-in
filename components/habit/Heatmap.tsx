@@ -2,7 +2,7 @@ import React from 'react';
 import CalendarHeatmap from 'react-calendar-heatmap';
 import 'react-calendar-heatmap/dist/styles.css';
 
-  {/* @ts-expect-error avoid error */}
+  {/* @ts-expect-error */}
 const Heatmap = ({entries}) => {
 
 
@@ -15,7 +15,7 @@ const Heatmap = ({entries}) => {
     console.error("Error parsing entries:", error);
   }
 
-    {/* @ts-expect-error avoid error */}
+    {/* @ts-expect-error */}
   const formatHeatmapData = (entries) => {
     // Check if entries is an array
     if (!Array.isArray(entries)) {
@@ -39,12 +39,13 @@ const Heatmap = ({entries}) => {
   const today = new Date(); // Today's date
   const fourMonthsAgo = new Date(today); // Create a new date object based on today's date
   fourMonthsAgo.setMonth(today.getMonth() - 4); // Set the month to one month ago
+  today.setHours(0, 0, 0, 0); // Set time to midnight for today
 
   return (
     <div className='w-full mx-auto p-4'>
       <CalendarHeatmap
         startDate={fourMonthsAgo} // Start date
-          // @ts-expect-error avoid error
+        // @ts-expect-error avoid error
         endDate={today-1} // End date set to today
         values={heatmapData}
         classForValue={(value) => {
