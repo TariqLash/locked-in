@@ -2,7 +2,7 @@ import React from 'react';
 import CalendarHeatmap from 'react-calendar-heatmap';
 import 'react-calendar-heatmap/dist/styles.css';
 
-  {/* @ts-expect-error */}
+  {/* @ts-expect-error avoid error */}
 const Heatmap = ({entries}) => {
 
 
@@ -15,7 +15,7 @@ const Heatmap = ({entries}) => {
     console.error("Error parsing entries:", error);
   }
 
-    {/* @ts-expect-error */}
+    {/* @ts-expect-error avoid error */}
   const formatHeatmapData = (entries) => {
     // Check if entries is an array
     if (!Array.isArray(entries)) {

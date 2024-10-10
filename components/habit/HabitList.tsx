@@ -1,10 +1,10 @@
 import { getSession } from '@/lib/getSession';
 import { redirect } from 'next/navigation';
 import React from 'react'
-import HabitCard from './HabitCard' // Import the Habitcard component
 import { Habit } from '@/models/Habit';
 import { User } from '@/models/User';
 import { HabitEntry } from '@/models/HabitEntry';
+import HabitCard from './HabitCard';
 
 const HabitList = async() => {
 
