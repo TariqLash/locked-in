@@ -36,27 +36,27 @@ const Login = async () => {
         <Button variant="outline" className='bg-white text-black rounded mb-1 h-12'>
           Login &rarr;
         </Button>
-        <div className='flex items-center mb-3 mt-3 h-12 items-center'>
+        {/* <div className='flex items-center mb-3 mt-3 h-12 items-center'>
           <div className='divider w-full'></div>
           <p className='mx-3 subtitle'>OR</p>
           <div className='divider w-full'></div>
-        </div>
+        </div> */}
       </form>
 
-      <form action={async () => {
+      {/* <form action={async () => {
         'use server'
         await signIn('github');
       }} className='rounded grayBorder flex justify-center mb-5 h-12 items-center'>
         <Button className='w-96'><IconBrandGithub className='mr-3' /><span>Sign in with Github</span></Button>
 
-      </form>
-      <form action={async () => {
+      </form> */}
+      {/* <form action={async () => {
         'use server'
         await signIn('google');
       }} className=' grayBorder flex justify-center rounded mb-5 h-12 items-center' >
         <Button className='w-96'><IconBrandGoogle className='mr-3' /><span>Sign in with Google</span></Button>
 
-      </form>
+      </form> */}
       <p className='subtitle'>Don't have an account? <Link href="/register" className='text-white underline'>Sign up</Link></p>
 
     </div>

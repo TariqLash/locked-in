@@ -19,7 +19,6 @@ const HabitList = async() => {
     
     // const userHabitEntries = await HabitEntry.find({ user: userRecord?._id});
     // const userHabitEntries = await HabitEntry.find({ user: userRecord?._id, habitId: userHabits._id }); // Fetch entries for the current habit
-    // console.log("entries",userHabitEntries)
 
   return (
     <div className='flex flex-col '>
@@ -32,7 +31,6 @@ const HabitList = async() => {
                     const userId = userRecord?._id.toString();
                     const habitId = habit._id.toString();
                     const userHabitEntries = await HabitEntry.find({ user: userId, habit: habitId}); // Fetch entries for the current habit
-                    // console.log("entries",userHabitEntries)
 
                     return (
                         <HabitCard

@@ -25,7 +25,7 @@ const Settings = async() => {
           'use server'
           await signOut(); 
         }}>
-          <Button type='submit' variant={"ghost"}>Logout</Button>
+          <Button type='submit' variant={"outline"}>Logout</Button>
         </form>
     </ul>
   </div>

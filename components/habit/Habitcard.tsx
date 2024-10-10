@@ -18,7 +18,7 @@ import {
 import { EllipsisVertical, Square, SquareCheckBig } from 'lucide-react'
 import Heatmap from './Heatmap'
 import { Checkbox } from "@/components/ui/checkbox"
-import { addHabitEntry } from '@/action/habitEntry'
+import { completeHabit } from '@/action/habitEntry'
 import { Button } from '../ui/button'
 import { deleteHabit } from '@/action/habit'
 
@@ -37,14 +37,13 @@ export default function HabitCard({ habitId,habitName, habitDesc,entries }) {
   const handleSubmit = async (event) => {
     // event.preventDefault(); // Prevent page reload
 
-    // Call addHabitEntry function, passing the habitId and other data
-    await addHabitEntry({
+    // Call completeHabit function, passing the habitId and other data
+    await completeHabit({
       habitId, // Send the habitId
       completed: true, // Example: mark as completed (you can modify this if needed)
       created_at: new Date().toISOString(), // Example: current date and time
     });
 
-    console.log('Habit entry added for habitId:', habitId);
   };
 
 
@@ -52,7 +51,6 @@ export default function HabitCard({ habitId,habitName, habitDesc,entries }) {
   const calculateStreak = (entries) => {
     let streak = 0;
     const today = new Date();
-    today.setHours(0, 0, 0, 0); // Set time to midnight
 
     // Check if today's entry is completed
     const todayEntry = entries.find(entry => {
@@ -91,7 +89,6 @@ export default function HabitCard({ habitId,habitName, habitDesc,entries }) {
   };
 
   const streakCount = calculateStreak(JSON.parse(entries));
-  console.log("streak",streakCount)
 
 
   const calculateConsistency = (entries) => {
@@ -108,19 +105,15 @@ export default function HabitCard({ habitId,habitName, habitDesc,entries }) {
 
   // Calculate consistency percentage
   const consistencyPercentage = Math.round(calculateConsistency(entries));
-  console.log("consistency", consistencyPercentage)
 
   const totalCheckIns = parsedEntries.filter(entry => entry.completed === true).length;
-  console.log("total: ", totalCheckIns)
 
-  console.log("TODAY: ",todayCompleted)
 
 
   const handleDeleteHabit = async () => {
     if (window.confirm('Are you sure you want to delete this habit?')) {
       try {
         await deleteHabit(habitId); // Call the delete function
-        console.log('Habit deleted successfully');
         // Optionally, you can update the UI or refetch data here
       } catch (error) {
         console.error('Error deleting habit:', error);

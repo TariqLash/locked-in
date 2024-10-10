@@ -6,15 +6,12 @@ import { HabitEntry } from "@/models/HabitEntry";
 import { User } from "@/models/User";
 
 
-const addHabitEntry = async (entryData) => {
+const completeHabit = async (entryData) => {
     // Ensure a fresh DB connection
     await connectDB();
-  console.log('======================================================');
 
-  // console.log('Habit ID:', entryData.habitId);
   const checkHabit = entryData.habitId;
   const habitName = await Habit.findOne({_id: entryData.habitId});
-  console.log("Habit Clicked: ",habitName.habitName)
 
   const session = await getSession();
   const user = session?.user;
@@ -26,7 +23,6 @@ const addHabitEntry = async (entryData) => {
     return; // Handle error (user not found)
   }
 
-  console.log("User: ", userRecord.firstName);
   // all habits
   const allHabits = await Habit.find({ createdBy: userRecord._id }); // Adjust if habits are stored differently
 
@@ -37,7 +33,6 @@ const addHabitEntry = async (entryData) => {
   .sort({ date: -1 }) // Sort by `date` in descending order for the latest entry
   .exec();
 
-  console.log("latest entry: ", latestEntry._id)
 
   if (latestEntry) {
     // Toggle the completed status
@@ -46,12 +41,9 @@ const addHabitEntry = async (entryData) => {
     // Save the updated entry
     await latestEntry.save();
     
-    console.log(`Habit entry updated. Completed: ${latestEntry.completed}`);
   } else {
-    console.log("No habit entries found.");
   }
   
-  console.log('======================================================');
   
 
 };
@@ -62,4 +54,4 @@ const fetchHabitEntries = async (habitId) => {
   return allHabitEntries;
 };
 
-export { addHabitEntry, fetchHabitEntries };
+export { completeHabit, fetchHabitEntries };

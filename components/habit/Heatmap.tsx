@@ -47,7 +47,6 @@ const Heatmap = ({habitId,entries}) => {
 
   const heatmapData = formatHeatmapData(parsedEntries);
 
-  console.log(heatmapData)
 
 
   const today = new Date(); // Today's date
@@ -59,7 +58,7 @@ const Heatmap = ({habitId,entries}) => {
     <div className='w-full mx-auto p-4'>
       <CalendarHeatmap
         startDate={fourMonthsAgo} // Start date
-        endDate={today-1} // End date set to today
+        endDate={today} // End date set to today
         values={heatmapData}
         classForValue={(value) => {
           if (!value || value.count === 0) {
@@ -94,7 +93,6 @@ export default Heatmap;
 // //   )
 
 // const Heatmap = ({habitId,entries}) => {
-//  console.log("entries from heatmap:", entries);
   
 //   // Check if entries is a string and parse it
 //   let parsedEntries = [];
@@ -117,7 +115,6 @@ export default Heatmap;
 //   // Create an array of completed values (0 for false, 1 for true)
 //   let completedValues = parsedEntries.map(entry => entry.completed ? 1 : 0);
 
-//   console.log("Completed values (0 for false, 1 for true):", completedValues);
 
 //   // Create a new array to hold completed values for each day of the week
 //   const completedArray = new Array(yLabels.length).fill(0).map(() => 
@@ -130,7 +127,6 @@ export default Heatmap;
 //     completedArray[dayIndex][Math.floor(index / yLabels.length)] = value;
 //   });
 
-//   console.log("Final Completed values array:", completedArray);
 
 //   return (
 //     <div className='w-full pl-1'>
