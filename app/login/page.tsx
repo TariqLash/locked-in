@@ -16,7 +16,7 @@ const Login = async () => {
       <h1 className='text-2xl'>Welcome Back! 👋🏾</h1>
       <p className='subtitle mb-5 items-center'>Log in to access your account.</p>
       {/* @ts-expect-error avoid error */}
-      <form action={login} className='flex flex-col w-96 '>
+      <form method='POST' action={login} className='flex flex-col w-96 '>
         <Input
           className=' rounded mb-5 h-12 items-center grayBorder authInput'
           id='email'
