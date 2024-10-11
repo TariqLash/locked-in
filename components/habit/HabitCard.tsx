@@ -23,7 +23,7 @@ import { deleteHabit } from '@/action/habit'
 
 // Accept habit data as props
   {/* @ts-expect-error avoid error */}
-  export default function HabitCard({ habitId, habitName, habitDesc, entries }) {
+export default function HabitCard({ habitId, habitName, habitDesc, entries }) {
 
   let todayCompleted = false;
   let parsedEntries = [];
