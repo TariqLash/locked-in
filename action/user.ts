@@ -7,12 +7,11 @@ import { hash } from "bcryptjs";
 import { CredentialsSignin } from "next-auth";
 import { signIn } from "@/auth";
 
-// Reuse MongoDB connection
-await connectDB();
-
 const login = async (formData: FormData) => {
   const email = formData.get("email") as string;
   const password = formData.get("password") as string;
+
+  await connectDB(); // Ensure the database connection is established
 
   try {
     await signIn("credentials", {
@@ -25,7 +24,7 @@ const login = async (formData: FormData) => {
     const someError = error as CredentialsSignin;
     return someError.cause;
   }
-  
+
   redirect("/");
 };
 
@@ -47,7 +46,7 @@ const register = async (formData: FormData) => {
     const existingUser = await User.findOne({ email });
     if (existingUser) throw new Error("User already exists");
 
-    // Hash the password (using lower salt rounds to reduce time)
+    // Hash the password
     const hashedPassword = await hash(password, 10);
 
     // Create the new user
@@ -65,7 +64,6 @@ const register = async (formData: FormData) => {
     redirect("/login");
 
   } catch (error) {
-    // Add more specific error handling based on the error type
     console.error("Error during registration:", error);
     throw new Error("Registration failed. Please try again.");
   }
