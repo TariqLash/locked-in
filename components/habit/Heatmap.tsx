@@ -46,7 +46,7 @@ const Heatmap = ({entries}) => {
       <CalendarHeatmap
         startDate={fourMonthsAgo} // Start date
         // @ts-expect-error avoid error
-        endDate={today-1} // End date set to today
+        endDate={today} // End date set to today
         values={heatmapData}
         classForValue={(value) => {
           if (!value || value.count === 0) {
