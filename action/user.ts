@@ -34,39 +34,21 @@ const register = async (formData: FormData) => {
   const email = formData.get("email") as string;
   const password = formData.get("password") as string;
 
-  // Basic validation
   if (!firstName || !lastName || !email || !password) {
     throw new Error("Please fill all fields");
   }
 
-  await connectDB(); // Ensure the database connection is established
+  await connectDB();
 
-  try {
-    // Check if the user already exists
-    const existingUser = await User.findOne({ email });
-    if (existingUser) throw new Error("User already exists");
+  // existing user
+  const existingUser = await User.findOne({ email });
+  if (existingUser) throw new Error("User already exists");
 
-    // Hash the password
-    const hashedPassword = await hash(password, 10);
+  const hashedPassword = await hash(password, 12);
 
-    // Create the new user
-    const newUser = await User.create({
-      firstName,
-      lastName,
-      email,
-      password: hashedPassword,
-      habits: [],  // Initialize with empty habits
-    });
-
-    console.log(`User created successfully 🥂:`, newUser);
-
-    // Redirect to login after successful registration
-    redirect("/login");
-
-  } catch (error) {
-    console.error("Error during registration:", error);
-    throw new Error("Registration failed. Please try again.");
-  }
+  await User.create({ firstName, lastName, email, password: hashedPassword });
+  console.log(`User created successfully 🥂`);
+  redirect("/login");
 };
 
 const fetchAllUsers = async () => {
