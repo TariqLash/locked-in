@@ -68,27 +68,27 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
   pages: {
     signIn: "/login",
   },
+  
+  secret: process.env.NEXT_PUBLIC_SECRET,
 
-// @ts-expect-error
-  callback: {
-    // @ts-expect-error
+  callbacks: {
     async session({ session, token }) {
       if (token?.sub && token?.role) {
         session.user.id = token.sub;
+        // @ts-expect-error silence minor type error
         session.user.role = token.role;
       }
       return session;
     },
 
-    // @ts-expect-error
     async jwt({ token, user }) {
       if (user) {
+        // @ts-expect-error silence minor type error
         token.role = user.role;
       }
       return token;
     },
 
-    // @ts-expect-error
     signIn: async ({ user, account }) => {
       if (account?.provider === "google") {
         try {
@@ -105,21 +105,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           throw new Error("Error while creating user");
         }
       }
-      if (account?.provider === "github") {
-        try {
-          const { email, name, id } = user;
-          await connectDB();
-          const alreadyUser = await User.findOne({ email });
 
-          if (!alreadyUser) {
-            await User.create({ email, name, authProviderId: id }); // Ensure you have a field in your model for authProviderId
-          } else {
-            return true;
-          }
-        } catch (error) {
-          throw new Error("Error while creating user");
-        }
-      }
       if (account?.provider === "credentials") {
         return true;
       } else {
