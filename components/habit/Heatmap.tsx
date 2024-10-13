@@ -45,7 +45,6 @@ const Heatmap = ({entries}) => {
     <div className='w-full mx-auto p-4'>
       <CalendarHeatmap
         startDate={fourMonthsAgo} // Start date
-        // @ts-expect-error avoid error
         endDate={today} // End date set to today
         values={heatmapData}
         classForValue={(value) => {
