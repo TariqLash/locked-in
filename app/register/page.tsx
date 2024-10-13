@@ -10,7 +10,7 @@ const Register = async() => {
 
   const session = await getSession();
   const user = session?.user;
-  if(user) redirect("/");
+  if(user) redirect("/login");
 
   return (
     <div className='pb-44 pt-20 h-screen flex flex-col items-center justify-center '>
