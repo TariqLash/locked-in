@@ -22,10 +22,8 @@ import { Button } from '../ui/button'
 import { deleteHabit } from '@/action/habit'
 
 // Accept habit data as props
-  {/* @ts-expect-error avoid error */}
 export default function HabitCard({ habitId, habitName, habitDesc, entries }) {
 
-  let todayCompleted = false;
   let parsedEntries = [];
   try {
     parsedEntries = JSON.parse(entries);
@@ -33,78 +31,64 @@ export default function HabitCard({ habitId, habitName, habitDesc, entries }) {
     console.error("Error parsing entries:", error);
   }
 
-      {/* @ts-expect-error avoid error */}
+  // Find the latest entry
+  const latestEntry = parsedEntries.length > 0 
+    ? parsedEntries.reduce((latest, entry) => {
+        return new Date(entry.date) > new Date(latest.date) ? entry : latest;
+      }, parsedEntries[0])
+    : null;
+
+  // Check if the latest entry is completed
+  const latestCompleted = latestEntry && latestEntry.completed;
+
   const handleSubmit = async (event) => {
     event.preventDefault(); // Prevent default form submission
 
-    // Delay the submission
-    // setTimeout(async () => {
-        // Call completeHabit function, passing the habitId and other data
-        await completeHabit({
-            habitId, // Send the habitId
-            completed: true, // Example: mark as completed (you can modify this if needed)
-            created_at: new Date().toISOString(), // Example: current date and time
-        });
-
-        // Reload the page after completion
-        window.location.reload(); // Reload the page
-    // }, 0); // Delay of 1000 milliseconds (1 second)
-};
-
-
-      {/* @ts-expect-error avoid error */}
-  const calculateStreak = (entries) => {
-    let streak = 0;
-    const today = new Date();
-
-    // Check if today's entry is completed
-      {/* @ts-expect-error avoid error */}
-    const todayEntry = entries.find(entry => {
-      const entryDate = new Date(entry.date);
-      return entryDate.toDateString() === today.toDateString() && entry.completed;
+    // Call completeHabit function
+    await completeHabit({
+      habitId, // Send the habitId
+      completed: true, // Mark as completed
+      created_at: new Date().toISOString(), // Current date and time
     });
 
-    // If today is not completed, streak is zero
-    if (!todayEntry) {
-      return streak;
-    } else {
-      todayCompleted=true;
-    }
-
-    // Count consecutive completed days
-    const currentDate = today;
-
-    while (true) {
-      const dateString = currentDate.toISOString().split('T')[0]; // Get date as YYYY-MM-DD
-        {/* @ts-expect-error avoid error */}
-      const completedEntry = entries.find(entry => {
-        const entryDate = new Date(entry.date);
-        return entryDate.toISOString().split('T')[0] === dateString && entry.completed;
-      });
-
-      if (completedEntry) {
-        streak++;
-      } else {
-        break; // Stop if we find a day that is not completed
-      }
-
-      // Move to the previous day
-      currentDate.setDate(currentDate.getDate() - 1);
-    }
-
-    return streak;
+    // Reload the page after completion
+    window.location.reload(); // Reload the page
   };
 
-  const streakCount = calculateStreak(JSON.parse(entries));
+  const calculateStreak = (entries) => {
+    let streak = 0;
+  
+    if (!entries || entries.length === 0) {
+      return streak;
+    }
+  
+    // Sort entries by date (most recent first)
+    const sortedEntries = [...entries].sort((a, b) => new Date(b.date) - new Date(a.date));
+  
+    // Start from the most recent entry and count consecutive completed days
+    let currentDate = new Date(sortedEntries[0].date); // Start from the latest date
+  
+    for (let entry of sortedEntries) {
+      const entryDate = new Date(entry.date);
+  
+      // If the entry is completed and matches the expected date, increase the streak
+      if (entry.completed && entryDate.toDateString() === currentDate.toDateString()) {
+        streak++;
+        currentDate.setDate(currentDate.getDate() - 1); // Move to the previous day
+      } else if (entryDate.toDateString() !== currentDate.toDateString()) {
+        break; // Stop counting if the streak is broken
+      }
+    }
+  
+    return streak;
+  };
+  
 
+  const streakCount = calculateStreak(parsedEntries);
 
   const calculateConsistency = () => {
-    // Safely parse entries, ensuring it's an array
-    
-
     // Count total and completed entries
     const totalEntries = parsedEntries.length;
-      {/* @ts-expect-error avoid error */}
     const completedEntries = parsedEntries.filter(entry => entry.completed).length;
 
     // Calculate percentage
@@ -114,10 +98,7 @@ export default function HabitCard({ habitId, habitName, habitDesc, entries }) {
   // Calculate consistency percentage
   const consistencyPercentage = Math.round(calculateConsistency());
 
-    {/* @ts-expect-error avoid error */}
   const totalCheckIns = parsedEntries.filter(entry => entry.completed === true).length;
-
-
 
   const handleDeleteHabit = async () => {
     if (window.confirm('Are you sure you want to delete this habit?')) {
@@ -143,43 +124,35 @@ export default function HabitCard({ habitId, habitName, habitDesc, entries }) {
               </Popover>
               {/* Use habitName from props */}
               <div className='flex flex-col'>
-              <CardTitle className='text-3xl flex items-center'>{habitName}</CardTitle>
-              <p className='text-gray-400 text-sm'>{habitDesc}</p>
+                <CardTitle className='text-3xl flex items-center'>{habitName}</CardTitle>
+                <p className='text-gray-400 text-sm'>{habitDesc}</p>
               </div>
             </div>
             <form onSubmit={handleSubmit}>
               <Button type="submit">
-                {todayCompleted ? <SquareCheckBig /> : <Square />}
+                {latestCompleted ? <SquareCheckBig /> : <Square />}
               </Button>
             </form>
           </div>
         </CardHeader>
         <CardContent className='flex w-full justify-between px-16'>
           <div className='flex flex-col items-center'>
-            {/* Use streak from props */}
             <h2 className='text-5xl font-bold'>{streakCount}</h2>
             <CardDescription>Streak</CardDescription>
           </div>
           <div className='flex flex-col items-center'>
-            {/* Use consistency from props */}
             <h2 className='text-5xl font-bold'>{consistencyPercentage}%</h2>
             <CardDescription>Consistency</CardDescription>
           </div>
           <div className='flex flex-col items-center'>
-            {/* Use checkIns from props */}
             <h2 className='text-5xl font-bold'>{totalCheckIns}</h2>
             <CardDescription>Check-Ins</CardDescription>
           </div>
-          
         </CardContent>
-        
         <CardFooter>
-
-
-
-        <Heatmap entries={entries}/>  
+          <Heatmap entries={entries}/>  
         </CardFooter>
       </Card>
     </>
-  )
+  );
 }

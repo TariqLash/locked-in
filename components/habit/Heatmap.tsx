@@ -5,7 +5,6 @@ import 'react-calendar-heatmap/dist/styles.css';
   {/* @ts-expect-error avoid error */}
 const Heatmap = ({entries}) => {
 
-
   let parsedEntries = [];
 
   // Safely parse entries, ensuring it's an array
@@ -34,18 +33,19 @@ const Heatmap = ({entries}) => {
 
   const heatmapData = formatHeatmapData(parsedEntries);
 
+  // Find the latest entry date or fallback to today
+  const latestEntryDate = parsedEntries.length > 0 
+    ? new Date(Math.max(...parsedEntries.map(entry => new Date(entry.date)))) 
+    : new Date(); // Fallback to today if no entries are available
 
-
-  const today = new Date(); // Today's date
-  const fourMonthsAgo = new Date(today); // Create a new date object based on today's date
-  fourMonthsAgo.setMonth(today.getMonth() - 4); // Set the month to one month ago
-  today.setHours(0, 0, 0, 0); // Set time to midnight for today
+  const fourMonthsAgo = new Date(latestEntryDate); // Start from four months before the latest entry date
+  fourMonthsAgo.setMonth(fourMonthsAgo.getMonth() - 4); // Set the month to four months ago
 
   return (
     <div className='w-full mx-auto p-4'>
       <CalendarHeatmap
         startDate={fourMonthsAgo} // Start date
-        endDate={today} // End date set to today
+        endDate={latestEntryDate} // End date set to latest entry date
         values={heatmapData}
         classForValue={(value) => {
           if (!value || value.count === 0) {

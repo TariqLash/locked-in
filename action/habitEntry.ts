@@ -33,6 +33,7 @@ const completeHabit = async (entryData:any) => {
   .sort({ date: -1 }) // Sort by `date` in descending order for the latest entry
   .exec();
 
+  console.log(latestEntry)
 
   if (latestEntry) {
     // Toggle the completed status
