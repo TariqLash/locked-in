@@ -5,7 +5,7 @@ import { User } from "@/models/User";
 import { Habit } from "@/models/Habit";
 
 // Schedule a cron job to run once a day at midnight (00:00)
-cron.schedule("* * * * *", async () => {
+cron.schedule("0 0 * * *", async () => {
     console.log("Running habit entry creation cron job at", new Date().toISOString());
     await createHabitEntries();
 });
