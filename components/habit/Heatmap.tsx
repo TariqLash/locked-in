@@ -38,15 +38,17 @@ const Heatmap = ({entries}) => {
   // @ts-expect-error avoid error
     ? new Date(Math.max(...parsedEntries.map(entry => new Date(entry.date)))) 
     : new Date(); // Fallback to today if no entries are available
+  const formattedEndDate = latestEntryDate.toISOString().split('T')[0];
 
   const fourMonthsAgo = new Date(latestEntryDate); // Start from four months before the latest entry date
   fourMonthsAgo.setMonth(fourMonthsAgo.getMonth() - 4); // Set the month to four months ago
 
+  const formattedStartDate = fourMonthsAgo.toISOString().split('T')[0];
   return (
     <div className='w-full mx-auto p-4'>
       <CalendarHeatmap
-        startDate={fourMonthsAgo} // Start date
-        endDate={latestEntryDate} // End date set to latest entry date
+        startDate={formattedStartDate} // Start date
+        endDate={formattedEndDate} // End date set to latest entry date
         values={heatmapData}
         classForValue={(value) => {
           if (!value || value.count === 0) {
