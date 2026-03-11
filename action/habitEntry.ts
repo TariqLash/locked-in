@@ -1,52 +1,43 @@
 "use server";
 import connectDB from "@/lib/db";
 import { getSession } from "@/lib/getSession";
-import { Habit } from "@/models/Habit";
 import { HabitEntry } from "@/models/HabitEntry";
 import { User } from "@/models/User";
 
 
 const completeHabit = async (entryData:any) => {
-    // Ensure a fresh DB connection
-    await connectDB();
-
-  const checkHabit = entryData.habitId;
-  const habitName = await Habit.findOne({_id: entryData.habitId});
+  await connectDB();
 
   const session = await getSession();
   const user = session?.user;
 
-  // Check if the user exists
   const userRecord = await User.findOne({ email: user?.email });
   if (!userRecord) {
     console.error("User not found");
-    return; // Handle error (user not found)
+    return;
   }
 
-  // all habits
-  const allHabits = await Habit.find({ createdBy: userRecord._id }); // Adjust if habits are stored differently
+  const today = new Date();
+  const startOfDay = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+  const endOfDay = new Date(today.getFullYear(), today.getMonth(), today.getDate() + 1);
 
-  const latestEntry = await HabitEntry.findOne({
-    habit: checkHabit,
+  const todayEntry = await HabitEntry.findOne({
+    habit: entryData.habitId,
     user: userRecord._id,
-  })
-  .sort({ date: -1 }) // Sort by `date` in descending order for the latest entry
-  .exec();
+    date: { $gte: startOfDay, $lt: endOfDay },
+  });
 
-  console.log(latestEntry)
-
-  if (latestEntry) {
-    // Toggle the completed status
-    latestEntry.completed = !latestEntry.completed;
-  
-    // Save the updated entry
-    await latestEntry.save();
-    
+  if (todayEntry) {
+    todayEntry.completed = !todayEntry.completed;
+    await todayEntry.save();
   } else {
+    await HabitEntry.create({
+      habit: entryData.habitId,
+      user: userRecord._id,
+      date: today,
+      completed: true,
+    });
   }
-  
-  
-
 };
 
 const fetchHabitEntries = async (habitId:any) => {

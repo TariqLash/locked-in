@@ -1,5 +1,5 @@
 "use client"
-import React from 'react'
+import React, { useState } from 'react'
 import {
   Card,
   CardContent,
@@ -8,139 +8,222 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
+import HabitDetailModal from './HabitDetailModal'
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover"
-
-
-import { EllipsisVertical, Square, SquareCheckBig } from 'lucide-react'
-import Heatmap from './Heatmap'
+import { EllipsisVertical, GripVertical } from 'lucide-react'
 import { completeHabit } from '@/action/habitEntry'
 import { Button } from '../ui/button'
-import { deleteHabit } from '@/action/habit'
+import { updateHabit } from '@/action/habit'
+import { getEarnedBadges, getNextBadge } from '@/lib/badges'
 
-// Accept habit data as props
-// @ts-expect-error avoid error
-export default function HabitCard({ habitId, habitName, habitDesc, entries }) {
+const COLOR_HEX: Record<string, string> = {
+  green:  '#22c55e',
+  blue:   '#3b82f6',
+  purple: '#a855f7',
+  orange: '#f97316',
+  red:    '#ef4444',
+  pink:   '#ec4899',
+};
 
-  let parsedEntries = [];
-  try {
-    parsedEntries = JSON.parse(entries);
-  } catch (error) {
-    console.error("Error parsing entries:", error);
-  }
+type HabitCardProps = {
+  habitId: string;
+  habitName: string;
+  habitDesc: string;
+  entries: string;
+  schedule: number[];
+  color: string;
+  onDelete: () => void;
+  dragListeners?: Record<string, unknown>;
+};
 
-  // Find the latest entry
-  const latestEntry = parsedEntries.length > 0
-    // @ts-expect-error avoid error
-    ? parsedEntries.reduce((latest, entry) => {
-      return new Date(entry.date) > new Date(latest.date) ? entry : latest;
-    }, parsedEntries[0])
-    : null;
+export default function HabitCard({ habitId, habitName, habitDesc, entries, schedule, color, onDelete, dragListeners }: HabitCardProps) {
+  const [isEditing, setIsEditing] = useState(false);
+  const [editName, setEditName] = useState(habitName);
+  const [editDesc, setEditDesc] = useState(habitDesc);
+  const [displayName, setDisplayName] = useState(habitName);
+  const [displayDesc, setDisplayDesc] = useState(habitDesc);
+  const [localEntries, setLocalEntries] = useState<{ date: string; completed: boolean }[]>(() => {
+    try { return JSON.parse(entries); } catch { return []; }
+  });
 
-  // Check if the latest entry is completed
-  const latestCompleted = latestEntry && latestEntry.completed;
+  const today = new Date();
+  const dayLabels = ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'];
+  const last7Days = Array.from({ length: 7 }, (_, i) => {
+    const d = new Date(today);
+    d.setDate(today.getDate() - (6 - i));
+    return d;
+  });
 
-  // @ts-expect-error avoid error
-  const handleSubmit = async (event) => {
-    event.preventDefault(); // Prevent default form submission
-
-    // Call completeHabit function
-    await completeHabit({
-      habitId, // Send the habitId
-      completed: true, // Mark as completed
-      created_at: new Date().toISOString(), // Current date and time
-    });
-
-    // Reload the page after completion
-    window.location.reload(); // Reload the page
-  };
-
-  // @ts-expect-error avoid error
-  const calculateStreak = (entries) => {
+  const calculateStreak = (entries: { date: string; completed: boolean }[]) => {
+    if (!entries || entries.length === 0) return 0;
+    const sorted = [...entries].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
     let streak = 0;
-
-    if (!entries || entries.length === 0) {
-      return streak;
-    }
-
-    // Sort entries by date (most recent first)
-    // @ts-expect-error avoid error
-    const sortedEntries = [...entries].sort((a, b) => new Date(b.date) - new Date(a.date));
-
-    // Start from the most recent entry and count consecutive completed days
-    const currentDate = new Date(sortedEntries[0].date); // Start from the latest date
-
-    for (const entry of sortedEntries) {
-      const entryDate = new Date(entry.date);
-
-      // If the entry is completed and matches the expected date, increase the streak
-      if (entry.completed && entryDate.toDateString() === currentDate.toDateString()) {
+    const cur = new Date(sorted[0].date);
+    for (const entry of sorted) {
+      const d = new Date(entry.date);
+      if (entry.completed && d.toDateString() === cur.toDateString()) {
         streak++;
-        currentDate.setDate(currentDate.getDate() - 1); // Move to the previous day
-      } else if (entryDate.toDateString() !== currentDate.toDateString()) {
-        break; // Stop counting if the streak is broken
-      }
+        cur.setDate(cur.getDate() - 1);
+      } else if (d.toDateString() !== cur.toDateString()) break;
     }
-
     return streak;
   };
 
-
-  const streakCount = calculateStreak(parsedEntries);
-
-  const calculateConsistency = () => {
-    // Count total and completed entries
-    const totalEntries = parsedEntries.length;
-    // @ts-expect-error avoid error
-    const completedEntries = parsedEntries.filter(entry => entry.completed).length;
-
-    // Calculate percentage
-    return totalEntries > 0 ? ((completedEntries / totalEntries) * 100) : 0;
+  const calculateBestStreak = (entries: { date: string; completed: boolean }[]) => {
+    if (!entries.length) return 0;
+    const sorted = [...entries].filter(e => e.completed).sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+    let best = 0, current = 0, prevDate: Date | null = null;
+    for (const entry of sorted) {
+      const d = new Date(entry.date);
+      if (prevDate) {
+        const diff = Math.round((d.getTime() - prevDate.getTime()) / (1000 * 60 * 60 * 24));
+        current = diff === 1 ? current + 1 : 1;
+        best = Math.max(best, current);
+      } else { current = 1; }
+      prevDate = d;
+    }
+    return Math.max(best, current);
   };
 
-  // Calculate consistency percentage
-  const consistencyPercentage = Math.round(calculateConsistency());
-  // @ts-expect-error avoid error
-  const totalCheckIns = parsedEntries.filter(entry => entry.completed === true).length;
+  const streakCount = calculateStreak(localEntries);
+  const totalCheckIns = localEntries.filter(e => e.completed).length;
+  const bestStreak = calculateBestStreak(localEntries);
+  const earnedBadges = getEarnedBadges(bestStreak);
+  const nextBadge = getNextBadge(bestStreak);
+  const consistencyPercentage = localEntries.length > 0
+    ? Math.round((totalCheckIns / localEntries.length) * 100)
+    : 0;
 
-  const handleDeleteHabit = async () => {
+  const handleSubmit = async (event: React.FormEvent) => {
+    event.preventDefault();
+    const todayStr = today.toDateString();
+    const existingIdx = localEntries.findIndex(e => new Date(e.date).toDateString() === todayStr);
+
+    // Optimistic update — instant
+    if (existingIdx >= 0) {
+      setLocalEntries(prev => prev.map((e, i) => i === existingIdx ? { ...e, completed: !e.completed } : e));
+    } else {
+      setLocalEntries(prev => [...prev, { date: new Date().toISOString(), completed: true }]);
+    }
+
+    // Sync to DB in background
+    completeHabit({ habitId });
+  };
+
+  const handleDeleteHabit = () => {
     if (window.confirm('Are you sure you want to delete this habit?')) {
-      try {
-        await deleteHabit(habitId); // Call the delete function
-        // Optionally, you can update the UI or refetch data here
-      } catch (error) {
-        console.error('Error deleting habit:', error);
-      }
+      onDelete(); // parent removes card from list instantly + calls DB
     }
   };
 
-  return (
-    <>
-      <Card className=' flex flex-col justify-evenly rounded-xl grayBorder m-2 habitCard bg-gray-950'>
-        <CardHeader>
-          <div className='flex justify-between items-center'>
-            <div className='flex items-center w-fit'>
+  const handleSaveEdit = (e: React.FormEvent) => {
+    e.preventDefault();
+    setDisplayName(editName);
+    setDisplayDesc(editDesc);
+    setIsEditing(false);
+    updateHabit(habitId, editName, editDesc); // fire and forget
+  };
 
-              <Popover>
-                <PopoverTrigger><EllipsisVertical className='mr-4 w-5' /></PopoverTrigger>
-                <PopoverContent className='bg-red-500 opacity-95 w-32 rounded ml-20'><button onClick={handleDeleteHabit}>Delete Habit</button></PopoverContent>
-              </Popover>
-              {/* Use habitName from props */}
-              <div className='flex flex-col'>
-                <CardTitle className='text-3xl flex items-center'>{habitName}</CardTitle>
-                <p className='text-gray-400 text-sm'>{habitDesc}</p>
-              </div>
+  const isCompleted = (day: Date) =>
+    localEntries.some(e => e.completed && new Date(e.date).toDateString() === day.toDateString());
+
+  const isToday = (day: Date) => day.toDateString() === today.toDateString();
+
+  const stop = (e: React.MouseEvent) => e.stopPropagation();
+
+  const hex = COLOR_HEX[color] ?? COLOR_HEX.green;
+
+  return (
+    <HabitDetailModal habitName={displayName} habitDesc={displayDesc} entries={JSON.stringify(localEntries)}>
+      <Card
+        className='flex flex-row rounded-xl grayBorder m-2 habitCard cursor-pointer transition-all duration-200 hover:scale-[1.01] hover:shadow-lg overflow-hidden p-0'
+        style={{
+          background: `linear-gradient(135deg, ${hex}12 0%, #030712 50%)`,
+        }}
+      >
+        {/* Colored drag strip */}
+        <div
+          {...(dragListeners as any)}
+          onClick={stop}
+          className='flex items-center justify-center w-9 flex-shrink-0 cursor-grab active:cursor-grabbing'
+          style={{ backgroundColor: `${hex}30` }}
+        >
+          <GripVertical className='w-4 h-4' style={{ color: hex }} />
+        </div>
+
+        {/* Main content */}
+        <div className='flex flex-col flex-1 min-w-0'>
+        <CardHeader>
+          <div className='flex justify-between items-center w-full'>
+            <div className='flex flex-col gap-1'>
+              <CardTitle className='text-3xl flex items-center'>{displayName}</CardTitle>
+              <p className='text-gray-400 text-sm'>{displayDesc}</p>
+              {earnedBadges.length > 0 && (
+                <div className='flex flex-wrap gap-1 mt-1'>
+                  {earnedBadges.map(badge => (
+                    <span
+                      key={badge.days}
+                      title={`${badge.label} — ${badge.days} day streak`}
+                      className={`text-xs px-2 py-0.5 rounded-full border font-medium ${badge.color}`}
+                    >
+                      {badge.icon} {badge.label}
+                    </span>
+                  ))}
+                </div>
+              )}
+              {nextBadge && (
+                <p className='text-[11px] text-gray-600 mt-0.5'>
+                  {nextBadge.days - bestStreak} days to {nextBadge.icon} {nextBadge.label}
+                </p>
+              )}
             </div>
-            <form onSubmit={handleSubmit}>
-              <Button type="submit">
-                {latestCompleted ? <SquareCheckBig /> : <Square />}
-              </Button>
-            </form>
+
+            <div className='flex items-start gap-2' onClick={stop}>
+              {isEditing && (
+                <form onSubmit={handleSaveEdit} className='flex flex-col gap-2'>
+                  <input
+                    className='bg-gray-800 border border-gray-600 rounded px-2 py-1 text-sm text-white'
+                    value={editName}
+                    onChange={e => setEditName(e.target.value)}
+                    placeholder='Habit name'
+                  />
+                  <input
+                    className='bg-gray-800 border border-gray-600 rounded px-2 py-1 text-sm text-gray-400'
+                    value={editDesc}
+                    onChange={e => setEditDesc(e.target.value)}
+                    placeholder='Description'
+                  />
+                  <div className='flex gap-2'>
+                    <Button type='submit' className='h-7 text-xs bg-white text-black hover:bg-gray-200'>Save</Button>
+                    <Button type='button' variant='outline' className='h-7 text-xs' onClick={() => setIsEditing(false)}>Cancel</Button>
+                  </div>
+                </form>
+              )}
+              <Popover>
+                <PopoverTrigger><EllipsisVertical className='w-5' /></PopoverTrigger>
+                <PopoverContent className='w-36 rounded p-1 bg-gray-900 border border-gray-700'>
+                  <button
+                    onClick={() => setIsEditing(true)}
+                    className='w-full text-left px-3 py-2 text-sm rounded hover:bg-gray-800'
+                  >
+                    Edit Habit
+                  </button>
+                  <button
+                    onClick={handleDeleteHabit}
+                    className='w-full text-left px-3 py-2 text-sm rounded text-red-400 hover:bg-gray-800'
+                  >
+                    Delete Habit
+                  </button>
+                </PopoverContent>
+              </Popover>
+            </div>
           </div>
         </CardHeader>
+
         <CardContent className='flex w-full justify-between px-16'>
           <div className='flex flex-col items-center'>
             <h2 className='text-5xl font-bold'>{streakCount}</h2>
@@ -155,10 +238,59 @@ export default function HabitCard({ habitId, habitName, habitDesc, entries }) {
             <CardDescription>Check-Ins</CardDescription>
           </div>
         </CardContent>
-        <CardFooter>
-          <Heatmap entries={entries} />
+
+        <CardFooter className='flex justify-between px-6 pb-5' onClick={stop}>
+          {last7Days.map((day, i) => {
+            const completed = isCompleted(day);
+            const todayDay = isToday(day);
+            const scheduled = schedule.includes(day.getDay());
+
+            if (todayDay) {
+              return (
+                <Popover key={i}>
+                  <PopoverTrigger asChild>
+                    <div className={`flex flex-col items-center gap-1 cursor-pointer ${!scheduled ? 'opacity-25' : ''}`}>
+                      <span className='text-xs text-gray-400'>{dayLabels[day.getDay()]}</span>
+                      <div
+                        className='w-8 h-8 rounded-full border flex items-center justify-center text-xs font-medium transition-colors text-white'
+                        style={completed ? { backgroundColor: hex, borderColor: hex } : { borderColor: 'white' }}
+                      >
+                        {day.getDate()}
+                      </div>
+                    </div>
+                  </PopoverTrigger>
+                  <PopoverContent className='w-40 rounded p-2 bg-gray-900 border border-gray-700'>
+                    <form onSubmit={handleSubmit}>
+                      <Button
+                        type='submit'
+                        className={`w-full h-8 text-sm ${completed ? 'bg-gray-700 hover:bg-gray-600' : 'bg-green-600 hover:bg-green-700'}`}
+                      >
+                        {completed ? 'Undo check-in' : 'Mark as done'}
+                      </Button>
+                    </form>
+                  </PopoverContent>
+                </Popover>
+              );
+            }
+
+            return (
+              <div key={i} className={`flex flex-col items-center gap-1 ${!scheduled ? 'opacity-25' : ''}`}>
+                <span className='text-xs text-gray-400'>{dayLabels[day.getDay()]}</span>
+                <div
+                  className='w-8 h-8 rounded-full border flex items-center justify-center text-xs font-medium'
+                  style={completed
+                    ? { backgroundColor: hex, borderColor: hex, color: 'white' }
+                    : { borderColor: '#4b5563', color: '#6b7280' }
+                  }
+                >
+                  {day.getDate()}
+                </div>
+              </div>
+            );
+          })}
         </CardFooter>
+        </div>
       </Card>
-    </>
+    </HabitDetailModal>
   );
 }

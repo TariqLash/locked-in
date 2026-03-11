@@ -2,10 +2,13 @@
 
 import connectDB from "@/lib/db";
 import { User } from "@/models/User";
+import { Habit } from "@/models/Habit";
+import { HabitEntry } from "@/models/HabitEntry";
 import { redirect } from "next/navigation";
-import { hash } from "bcryptjs";
+import { hash, compare } from "bcryptjs";
 import { CredentialsSignin } from "next-auth";
-import { signIn } from "@/auth";
+import { signIn, signOut } from "@/auth";
+import { getSession } from "@/lib/getSession";
 
 const login = async (formData: FormData) => {
   const email = formData.get("email") as string;
@@ -63,4 +66,40 @@ const fetchAllUsers = async () => {
   }
 };
 
-export { register, login, fetchAllUsers };
+const updateProfile = async (firstName: string, lastName: string) => {
+  const session = await getSession();
+  const user = session?.user;
+  if (!user) throw new Error("Not authenticated");
+  await connectDB();
+  await User.findOneAndUpdate({ email: user.email }, { firstName, lastName });
+};
+
+const changePassword = async (currentPassword: string, newPassword: string) => {
+  const session = await getSession();
+  const user = session?.user;
+  if (!user) throw new Error("Not authenticated");
+  await connectDB();
+  const userRecord = await User.findOne({ email: user.email }).select("+password");
+  if (!userRecord?.password) throw new Error("No password set on this account");
+  const valid = await compare(currentPassword, userRecord.password);
+  if (!valid) throw new Error("Current password is incorrect");
+  const hashed = await hash(newPassword, 12);
+  await User.findOneAndUpdate({ email: user.email }, { password: hashed });
+};
+
+const deleteAccount = async () => {
+  const session = await getSession();
+  const user = session?.user;
+  if (!user) throw new Error("Not authenticated");
+  await connectDB();
+  const userRecord = await User.findOne({ email: user.email });
+  if (!userRecord) throw new Error("User not found");
+  const habits = await Habit.find({ createdBy: userRecord._id });
+  const habitIds = habits.map((h: any) => h._id);
+  await HabitEntry.deleteMany({ habit: { $in: habitIds } });
+  await Habit.deleteMany({ createdBy: userRecord._id });
+  await User.findByIdAndDelete(userRecord._id);
+  await signOut({ redirectTo: "/" });
+};
+
+export { register, login, fetchAllUsers, updateProfile, changePassword, deleteAccount };

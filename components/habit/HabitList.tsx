@@ -1,10 +1,10 @@
 import { getSession } from '@/lib/getSession';
 import { redirect } from 'next/navigation';
 import React from 'react'
-import HabitCard from './HabitCard' // Import the Habitcard component
 import { Habit } from '@/models/Habit';
 import { User } from '@/models/User';
 import { HabitEntry } from '@/models/HabitEntry';
+import SortableHabitList from './SortableHabitList';
 
 const HabitList = async() => {
 
@@ -12,67 +12,39 @@ const HabitList = async() => {
     const user = session?.user;
     if (!user) redirect("/");
 
-    const userRecord = await User.findOne({ email: user?.email });  // Assuming user?.email exists in the session
-    const userHabits = await Habit.find({ createdBy: userRecord?._id }); // Assuming user.id corresponds to the ObjectId of the user
-    
-    // const userHabitEntries = await HabitEntry.find({ user: userRecord?._id});
-    // const userHabitEntries = await HabitEntry.find({ user: userRecord?._id, habitId: userHabits._id }); // Fetch entries for the current habit
-    // console.log("entries",userHabitEntries)
+    const userRecord = await User.findOne({ email: user?.email });
+    const userHabits = await Habit.find({ createdBy: userRecord?._id }).sort({ order: 1 });
 
-  return (
-    <div className='flex flex-col '>
+    const habitsWithEntries = await Promise.all(
+        userHabits.map(async (habit) => {
+            const userId = userRecord?._id.toString();
+            const habitId = habit._id.toString();
+            const userHabitEntries = await HabitEntry.find({ user: userId, habit: habitId });
+            return {
+                habitId,
+                habitName: habit.habitName,
+                habitDesc: habit.description,
+                entries: JSON.stringify(userHabitEntries),
+                schedule: habit.schedule ?? [0,1,2,3,4,5,6],
+                color: habit.color ?? 'green',
+            };
+        })
+    );
 
-        <div className='p-2 flex flex-wrap justify-center mt-2'>
-                {/* Map over all habits and pass data as props to HabitCard */}
-                {userHabits?.map(async(habit) => {
-                    // Filter entries for the current habit
-                    const userId = userRecord?._id.toString();
-                    const habitId = habit._id.toString();
-                    const userHabitEntries = await HabitEntry.find({ user: userId, habit: habitId}); // Fetch entries for the current habit
-                    // console.log("entries",userHabitEntries)
-
-                    return (
-                        <HabitCard
-                            key={habitId}
-                            habitName={habit.habitName} // Pass the habit name
-                            habitDesc={habit.description}
-                            habitId={habitId}
-                            entries={JSON.stringify(userHabitEntries)} // Pass the filtered entries for the current habit
-                        />
-                    );
-                })}
+    if (habitsWithEntries.length === 0) {
+        return (
+            <div className='flex flex-col items-center justify-center mt-24 text-center'>
+                <p className='text-gray-400 text-lg mb-2'>No habits yet</p>
+                <p className='text-gray-600 text-sm'>Click the + button to add your first habit</p>
             </div>
-    </div>
- 
-   
-  )
+        );
+    }
+
+    return (
+        <div className='flex flex-col'>
+            <SortableHabitList habits={habitsWithEntries} />
+        </div>
+    );
 }
 
 export default HabitList
-
-// import { fetchAllHabits } from '@/action/habit';
-// import { getSession } from '@/lib/getSession';
-// import { redirect } from 'next/navigation';
-// import React from 'react'
-
-// const HabitList = async() => {
-
-   
-//     const session = await getSession();
-//     const user = session?.user;
-//     if (!user) redirect("/");
-
-//     const allHabits = await fetchAllHabits();
-
-//   return (
-//     <div>
-//         {allHabits?.map((habit:any) => (
-//                 <div key={habit._id}>
-//                     <p>{habit.habitName}</p>
-//                 </div>
-//             ))}
-//     </div>
-//   )
-// }
-
-// export default HabitList

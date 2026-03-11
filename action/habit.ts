@@ -26,44 +26,20 @@ import { redirect } from "next/navigation";
 //   redirect("/");
 // };
 
-const addHabit = async (formData: FormData) => {
-  const habitName = formData.get("habitName") as string;
-  const description = formData.get("description") as string;
+const addHabit = async (habitName: string, description: string, schedule: number[], color: string) => {
+  if (!habitName) throw new Error("Please enter a habit name");
 
   const session = await getSession();
   const user = session?.user;
 
-  //   console.log("Session:", session);
-  // console.log("User object:", user);
-
-  // Find the user by their unique email address
-  const userRecord = await User.findOne({ email: user?.email });  // Assuming user?.email exists in the session
-
-
-  if (!habitName || !description) {
-    throw new Error("Please fill all fields");
-  }
-
   await connectDB();
+  const userRecord = await User.findOne({ email: user?.email });
 
-  // existing user
-  //   const existingUser = await User.findOne({ email });
-  //   if (existingUser) throw new Error("User already exists");
-
-  //   const hashedPassword = await hash(password, 12);
-  const newHabit = await Habit.create({ habitName, description, createdBy: userRecord?._id });
-  const newHabitEntry = await HabitEntry.create({
-                    habit: newHabit._id,
-                    user: userRecord?._id,
-                    completed: false,
-                });
-  const updateResult = await User.updateOne(
-    { _id: userRecord?._id },
-    { $push: { habits: newHabit._id } }
-  );
+  const newHabit = await Habit.create({ habitName, description, schedule, color, createdBy: userRecord?._id });
+  await HabitEntry.create({ habit: newHabit._id, user: userRecord?._id, completed: false });
+  await User.updateOne({ _id: userRecord?._id }, { $push: { habits: newHabit._id } });
 
   redirect("/private/dashboard");
-
 };
 
 // Step 3: Update the user's habits array
@@ -122,9 +98,32 @@ const deleteHabit = async (habitId:any) => {
     { _id: userRecord?._id },
     { $pull: { habits: habitId } } // Use $pull to remove the habit ID from the habits array
   );
-
-  redirect("/private/dashboard");
 };
 
-// Export the deleteHabit function along with others
-export { addHabit, fetchAllHabits, fetchAllUserHabits, deleteHabit };
+const updateHabit = async (habitId: string, habitName: string, description: string) => {
+  const session = await getSession();
+  const user = session?.user;
+  if (!user) throw new Error("User not authenticated");
+
+  await connectDB();
+  const userRecord = await User.findOne({ email: user?.email });
+  const habit = await Habit.findById(habitId);
+  if (!habit || habit.createdBy.toString() !== userRecord?._id.toString()) {
+    throw new Error("Unauthorized");
+  }
+
+  await Habit.findByIdAndUpdate(habitId, { habitName, description });
+};
+
+const reorderHabits = async (orderedIds: string[]) => {
+  const session = await getSession();
+  const user = session?.user;
+  if (!user) throw new Error("User not authenticated");
+
+  await connectDB();
+  await Promise.all(
+    orderedIds.map((id, index) => Habit.findByIdAndUpdate(id, { order: index }))
+  );
+};
+
+export { addHabit, fetchAllHabits, fetchAllUserHabits, deleteHabit, updateHabit, reorderHabits };

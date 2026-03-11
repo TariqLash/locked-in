@@ -1,4 +1,5 @@
 import { login } from '@/action/user'
+import { signIn } from '@/auth'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { getSession } from '@/lib/getSession'
@@ -42,20 +43,19 @@ const Login = async () => {
         </div> */}
       </form>
 
-      {/* <form action={async () => {
+      <div className='flex items-center mb-3 mt-3 w-96'>
+        <div className='divider w-full'></div>
+        <p className='mx-3 subtitle'>OR</p>
+        <div className='divider w-full'></div>
+      </div>
+      <form action={async () => {
         'use server'
-        await signIn('github');
-      }} className='rounded grayBorder flex justify-center mb-5 h-12 items-center'>
-        <Button className='w-96'><IconBrandGithub className='mr-3' /><span>Sign in with Github</span></Button>
-
-      </form> */}
-      {/* <form action={async () => {
-        'use server'
-        await signIn('google');
-      }} className=' grayBorder flex justify-center rounded mb-5 h-12 items-center' >
-        <Button className='w-96'><IconBrandGoogle className='mr-3' /><span>Sign in with Google</span></Button>
-
-      </form> */}
+        await signIn('google', { redirectTo: '/private/dashboard' });
+      }} className='w-96'>
+        <Button className='w-full h-12 rounded' variant="outline">
+          <span>Sign in with Google</span>
+        </Button>
+      </form>
       <p className='subtitle'>Don&apos;t have an account? <Link href="/register" className='text-white underline'>Sign up</Link></p>
 
     </div>

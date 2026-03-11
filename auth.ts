@@ -106,9 +106,9 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
 
       if (account?.provider === "credentials") {
         return true;
-      } else {
-        return false;
       }
+
+      return true;
     },
   },
 });

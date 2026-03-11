@@ -1,60 +1,46 @@
 import { signOut } from '@/auth';
 import { Button } from '@/components/ui/button';
+import Navbar from '@/components/auth/Navbar';
+import SettingsClient from '@/components/settings/SettingsClient';
+import connectDB from '@/lib/db';
 import { getSession } from '@/lib/getSession';
-import Link from 'next/link';
+import { User } from '@/models/User';
 import { redirect } from 'next/navigation';
-import React from 'react'
+import React from 'react';
 
-const Settings = async() => {
-
+const Settings = async () => {
   const session = await getSession();
   const user = session?.user;
-  if(!user) redirect("/login");
+  if (!user) redirect('/login');
 
-  // if(user?.role !== 'admin') return redirect("/private/dashboard");
-
-  // const allUsers = await fetchAllUsers();
+  await connectDB();
+  const userRecord = await User.findOne({ email: user.email }).select('+password');
 
   return (
-  <div className='h-screen'>
-    <Button><Link href="/private/dashboard">&larr; Dashboard</Link></Button>
-    <ul className='flex justify-center items-center w-full h-96'>
-    <form action={async () => {
-          'use server'
-          await signOut(); 
-        }}>
-          <Button type='submit' variant={"outline"}>Logout</Button>
-        </form>
-    </ul>
-  </div>
-  
-//     <div className='pt-20'>
-// <thead>
-//         <tr>
-//         <th>First Name</th>
-//         <th>Last Name</th>
-//         <th>Action</th>
-//         </tr>
-//     </thead>
-//     <tbody>
-//         {allUsers?.map((user) => (
-//           <tr key={user._id}>
-//             <td>{user.firstName}</td>
-//             <td>{user.lastName}</td>
-//             <td>
-//               <form action={async () => {
-//                 'use server';
-//                 await User.findByIdAndDelete(user._id);
-//               }}>
-//                 <button>Delete</button>
-//               </form>
-//           </td>
-//           </tr>
-//       ))}
-//     </tbody>
-//     </div>
-    
-  )
-}
+    <div className='min-h-screen'>
+      <Navbar hideSettings backHref="/private/dashboard" />
+      <div className='max-w-lg mx-auto px-4 pt-8'>
+        <div className='flex items-center justify-between mb-6'>
+          <h1 className='text-2xl font-bold'>Settings</h1>
+          <form action={async () => {
+            'use server';
+            await signOut({ redirectTo: '/' });
+          }}>
+            <Button type='submit' variant='outline' className='text-sm'>
+              Sign out
+            </Button>
+          </form>
+        </div>
+      </div>
 
-export default Settings
+      <SettingsClient
+        firstName={userRecord?.firstName ?? ''}
+        lastName={userRecord?.lastName ?? ''}
+        email={userRecord?.email ?? ''}
+        hasPassword={!!userRecord?.password}
+      />
+    </div>
+  );
+};
+
+export default Settings;
