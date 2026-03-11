@@ -167,7 +167,7 @@ export default function HabitDetailModal({ habitName, habitDesc, entries, childr
               <Tooltip
                 contentStyle={{ backgroundColor: '#111827', border: '1px solid #374151', borderRadius: 8, fontSize: 12 }}
                 labelStyle={{ color: '#9ca3af' }}
-                formatter={(v: number) => [`${v}%`, '7-day avg']}
+                formatter={(v) => [`${v}%`, '7-day avg']}
               />
               <Line
                 type='monotone'
