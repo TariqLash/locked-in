@@ -1,4 +1,5 @@
 import { register } from '@/action/user'
+import { signIn } from '@/auth'
 import { Input } from '@/components/ui/input'
 import { getSession } from '@/lib/getSession'
 import Link from 'next/link'
@@ -15,6 +16,24 @@ const Register = async () => {
       <div className='flex flex-col items-center text-center max-w-sm w-full'>
         <Link href="/" className='text-4xl font-bold tracking-tight mb-1'>Locked In</Link>
         <p className='text-gray-500 text-sm mb-10'>Create your account to get started.</p>
+
+        <form action={async () => {
+          'use server'
+          await signIn('google', { redirectTo: '/private/dashboard' });
+        }} className='w-full mb-3'>
+          <button
+            type='submit'
+            className='w-full h-11 rounded-xl border border-gray-800 text-sm text-gray-300 hover:bg-gray-900 transition-colors'
+          >
+            Continue with Google
+          </button>
+        </form>
+
+        <div className='flex items-center gap-3 w-full mb-3'>
+          <div className='flex-1 h-px bg-gray-800' />
+          <span className='text-gray-600 text-xs'>or</span>
+          <div className='flex-1 h-px bg-gray-800' />
+        </div>
 
         <form action={register} className='flex flex-col gap-3 w-full'>
           <div className='flex gap-3'>
