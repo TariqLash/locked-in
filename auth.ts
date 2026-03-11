@@ -89,7 +89,9 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           const alreadyUser = await User.findOne({ email });
 
           if (!alreadyUser) {
-            await User.create({ email, name, image, authProviderId: id });
+            const [firstName, ...rest] = (name ?? "").split(" ");
+            const lastName = rest.join(" ");
+            await User.create({ email, firstName, lastName, image, authProviderId: id });
           } else {
             return true;
           }
