@@ -1,6 +1,5 @@
 import { login } from '@/action/user'
 import { signIn } from '@/auth'
-import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { getSession } from '@/lib/getSession'
 import Link from 'next/link'
@@ -13,51 +12,52 @@ const Login = async () => {
   if (user) redirect("/");
 
   return (
-    <div className='pb-44 pt-20 h-screen flex flex-col items-center justify-center '>
-      <h1 className='text-2xl'>Welcome Back! 👋🏾</h1>
-      <p className='subtitle mb-5 items-center'>Log in to access your account.</p>
-      {/* @ts-expect-error avoid error */}
-      <form method='POST' action={login} className='flex flex-col w-96 '>
-        <Input
-          className=' rounded mb-5 h-12 items-center grayBorder authInput'
-          id='email'
-          placeholder='Email'
-          type='email'
-          name="email"
-        />
+    <div className='min-h-screen flex flex-col items-center justify-center px-4'>
+      <div className='flex flex-col items-center text-center max-w-sm w-full'>
+        <Link href="/" className='text-4xl font-bold tracking-tight mb-1'>Locked In</Link>
+        <p className='text-gray-500 text-sm mb-10'>Welcome back. Log in to your account.</p>
 
-        <Input
-          className=' rounded mb-5 h-12 items-center grayBorder authInput '
-          id='password'
-          placeholder='Enter your password'
-          type='password'
-          name="password"
-        />
-        <Button variant="outline" className='bg-white text-black rounded mb-1 h-12'>
-          Login &rarr;
-        </Button>
-        {/* <div className='flex items-center mb-3 mt-3 h-12 items-center'>
-          <div className='divider w-full'></div>
-          <p className='mx-3 subtitle'>OR</p>
-          <div className='divider w-full'></div>
-        </div> */}
-      </form>
+        {/* @ts-expect-error avoid error */}
+        <form method='POST' action={login} className='flex flex-col gap-3 w-full'>
+          <Input
+            id='email' name='email' type='email' placeholder='Email'
+            className='h-11 rounded-xl bg-gray-900 border-gray-800 text-sm authInput'
+          />
+          <Input
+            id='password' name='password' type='password' placeholder='Password'
+            className='h-11 rounded-xl bg-gray-900 border-gray-800 text-sm authInput'
+          />
+          <button
+            type='submit'
+            className='w-full h-11 rounded-xl bg-white text-black text-sm font-medium hover:bg-gray-200 transition-colors mt-1'
+          >
+            Log in
+          </button>
+        </form>
 
-      <div className='flex items-center mb-3 mt-3 w-96'>
-        <div className='divider w-full'></div>
-        <p className='mx-3 subtitle'>OR</p>
-        <div className='divider w-full'></div>
+        <div className='flex items-center gap-3 w-full my-5'>
+          <div className='flex-1 h-px bg-gray-800' />
+          <span className='text-gray-600 text-xs'>or</span>
+          <div className='flex-1 h-px bg-gray-800' />
+        </div>
+
+        <form action={async () => {
+          'use server'
+          await signIn('google', { redirectTo: '/private/dashboard' });
+        }} className='w-full'>
+          <button
+            type='submit'
+            className='w-full h-11 rounded-xl border border-gray-800 text-sm text-gray-300 hover:bg-gray-900 transition-colors'
+          >
+            Continue with Google
+          </button>
+        </form>
+
+        <p className='text-gray-600 text-sm mt-6'>
+          Don&apos;t have an account?{' '}
+          <Link href="/register" className='text-gray-300 hover:text-white transition-colors'>Sign up</Link>
+        </p>
       </div>
-      <form action={async () => {
-        'use server'
-        await signIn('google', { redirectTo: '/private/dashboard' });
-      }} className='w-96'>
-        <Button className='w-full h-12 rounded' variant="outline">
-          <span>Sign in with Google</span>
-        </Button>
-      </form>
-      <p className='subtitle'>Don&apos;t have an account? <Link href="/register" className='text-white underline'>Sign up</Link></p>
-
     </div>
   )
 }

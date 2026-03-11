@@ -1,5 +1,3 @@
-
-import { Button } from '@/components/ui/button';
 import { getSession } from '@/lib/getSession';
 import Link from 'next/link';
 import { redirect } from 'next/navigation';
@@ -11,19 +9,28 @@ const Home = async () => {
   if (user) redirect("/private/dashboard");
 
   return (
-    <div className='flex flex-col justify-center items-center h-full'>
-       <h1 className='text-xl font-bold mb-3'>Hello, Welcome to Locked-In!</h1>
-      <p>Your personal habit tracker designed to help you achieve your goals.</p>
-      <p className='mb-3'>Join our community of habit trackers and start your journey today!</p>
-      <div>
-     
-        <Button className='rounded mr-4 h-12 w-18'><Link href="/login">Log In</Link></Button>
-        <Button className='bg-white hover:bg-gray-300 text-black rounded-full h-12 w-18'><Link href="/register">Sign Up</Link></Button>
-      </div>
-   
-  </div>
+    <div className='min-h-screen flex flex-col items-center justify-center px-4'>
+      <div className='flex flex-col items-center text-center max-w-sm w-full'>
+        <h1 className='text-4xl font-bold tracking-tight mb-3'>Locked In</h1>
+        <p className='text-gray-500 text-sm mb-10'>Build habits. Stay consistent. See your progress.</p>
 
-  )
+        <div className='flex flex-col gap-3 w-full'>
+          <Link
+            href="/register"
+            className='w-full h-11 rounded-xl bg-white text-black text-sm font-medium flex items-center justify-center hover:bg-gray-200 transition-colors'
+          >
+            Get started
+          </Link>
+          <Link
+            href="/login"
+            className='w-full h-11 rounded-xl border border-gray-800 text-sm text-gray-300 flex items-center justify-center hover:bg-gray-900 transition-colors'
+          >
+            Log in
+          </Link>
+        </div>
+      </div>
+    </div>
+  );
 }
 
 export default Home

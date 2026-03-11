@@ -11,10 +11,12 @@ type Props = {
   habitName: string;
   habitDesc: string;
   entries: string;
-  children: React.ReactNode;
+  children?: React.ReactNode;
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
 };
 
-export default function HabitDetailModal({ habitName, habitDesc, entries, children }: Props) {
+export default function HabitDetailModal({ habitName, habitDesc, entries, children, open, onOpenChange }: Props) {
   let parsedEntries: Entry[] = [];
   try {
     parsedEntries = JSON.parse(entries);
@@ -83,10 +85,12 @@ export default function HabitDetailModal({ habitName, habitDesc, entries, childr
   });
 
   return (
-    <Dialog>
-      <DialogTrigger asChild>
-        {children}
-      </DialogTrigger>
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      {children && (
+        <DialogTrigger asChild>
+          {children}
+        </DialogTrigger>
+      )}
       <DialogContent className='max-h-[90vh] overflow-y-auto'>
         {/* Header */}
         <div className='mb-6'>

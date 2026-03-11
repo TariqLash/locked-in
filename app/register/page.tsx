@@ -1,39 +1,53 @@
 import { register } from '@/action/user'
-import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { getSession } from '@/lib/getSession'
 import Link from 'next/link'
 import { redirect } from 'next/navigation'
 import React from 'react'
 
-const Register = async() => {
-
+const Register = async () => {
   const session = await getSession();
   const user = session?.user;
-  if(user) redirect("/");
+  if (user) redirect("/");
 
   return (
-    <div className='pb-44 pt-20 h-screen flex flex-col items-center justify-center '>
-        <h1 className='text-2xl'>Create your account</h1>
-        <p className='subtitle mb-5'>Join us by filling in the details below to get started!</p>
+    <div className='min-h-screen flex flex-col items-center justify-center px-4'>
+      <div className='flex flex-col items-center text-center max-w-sm w-full'>
+        <Link href="/" className='text-4xl font-bold tracking-tight mb-1'>Locked In</Link>
+        <p className='text-gray-500 text-sm mb-10'>Create your account to get started.</p>
 
-        <form action={register} className='w-96'>
-            <div className='flex'>
-
-                <Input id='firstname' placeholder='First Name' type='text' name='firstname'
-                className=' rounded mb-5 h-12 mr-3 grayBorder authInput'/>
-                <Input id='lastname' placeholder='Last Name' type='text' name='lastname'
-                className=' rounded mb-5 h-12 grayBorder authInput'/>
-            </div>
-            <Input id='email' placeholder='Email' type='email' name='email'
-            className=' rounded mb-5 h-12 grayBorder authInput'/>
-            <Input id='password' placeholder='Enter your password' type='password' name='password'
-            className=' rounded mb-5 h-12 grayBorder authInput'/>
-        <Button variant="outline" className='bg-white text-black rounded mb-3 w-full h-12'>
-        Sign Up &rarr;
-              </Button>
-            <p className='subtitle text-center'>Already have an account? <Link href="/login" className='text-white underline'>Login</Link></p>
+        <form action={register} className='flex flex-col gap-3 w-full'>
+          <div className='flex gap-3'>
+            <Input
+              id='firstname' name='firstname' type='text' placeholder='First name'
+              className='h-11 rounded-xl bg-gray-900 border-gray-800 text-sm authInput'
+            />
+            <Input
+              id='lastname' name='lastname' type='text' placeholder='Last name'
+              className='h-11 rounded-xl bg-gray-900 border-gray-800 text-sm authInput'
+            />
+          </div>
+          <Input
+            id='email' name='email' type='email' placeholder='Email'
+            className='h-11 rounded-xl bg-gray-900 border-gray-800 text-sm authInput'
+          />
+          <Input
+            id='password' name='password' type='password' placeholder='Password'
+            className='h-11 rounded-xl bg-gray-900 border-gray-800 text-sm authInput'
+          />
+          <button
+            type='submit'
+            className='w-full h-11 rounded-xl bg-white text-black text-sm font-medium hover:bg-gray-200 transition-colors mt-1'
+          >
+            Create account
+          </button>
         </form>
+
+        <p className='text-gray-600 text-sm mt-6'>
+          Already have an account?{' '}
+          <Link href="/login" className='text-gray-300 hover:text-white transition-colors'>Log in</Link>
+        </p>
+      </div>
     </div>
   )
 }

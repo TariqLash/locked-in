@@ -94,6 +94,9 @@ export default function HabitCard({ habitId, habitName, habitDesc, entries, sche
   const bestStreak = calculateBestStreak(localEntries);
   const earnedBadges = getEarnedBadges(bestStreak);
   const nextBadge = getNextBadge(bestStreak);
+  const todayScheduled = schedule.includes(today.getDay());
+  const todayCompleted = localEntries.some(e => e.completed && new Date(e.date).toDateString() === today.toDateString());
+  const actionPending = todayScheduled && !todayCompleted;
   const consistencyPercentage = localEntries.length > 0
     ? Math.round((totalCheckIns / localEntries.length) * 100)
     : 0;
@@ -142,7 +145,7 @@ export default function HabitCard({ habitId, habitName, habitDesc, entries, sche
       <Card
         className='flex flex-row rounded-xl grayBorder m-2 habitCard cursor-pointer transition-all duration-200 hover:scale-[1.01] hover:shadow-lg overflow-hidden p-0'
         style={{
-          background: `linear-gradient(135deg, ${hex}12 0%, #030712 50%)`,
+          background: `linear-gradient(135deg, ${hex}15 0%, #030712 55%)`,
         }}
       >
         {/* Colored drag strip */}
@@ -156,7 +159,7 @@ export default function HabitCard({ habitId, habitName, habitDesc, entries, sche
         </div>
 
         {/* Main content */}
-        <div className='flex flex-col flex-1 min-w-0'>
+        <div className='flex flex-col flex-1 min-w-0 justify-between'>
         <CardHeader>
           <div className='flex justify-between items-center w-full'>
             <div className='flex flex-col gap-1'>
@@ -168,7 +171,7 @@ export default function HabitCard({ habitId, habitName, habitDesc, entries, sche
                     <span
                       key={badge.days}
                       title={`${badge.label} — ${badge.days} day streak`}
-                      className={`text-xs px-2 py-0.5 rounded-full border font-medium ${badge.color}`}
+                      className={`text-xs px-2 py-0.5 rounded-lg border font-medium ${badge.color}`}
                     >
                       {badge.icon} {badge.label}
                     </span>
@@ -239,7 +242,7 @@ export default function HabitCard({ habitId, habitName, habitDesc, entries, sche
           </div>
         </CardContent>
 
-        <CardFooter className='flex justify-between px-6 pb-5' onClick={stop}>
+        <CardFooter className='flex p-0 overflow-hidden mt-auto' onClick={stop}>
           {last7Days.map((day, i) => {
             const completed = isCompleted(day);
             const todayDay = isToday(day);
@@ -249,14 +252,15 @@ export default function HabitCard({ habitId, habitName, habitDesc, entries, sche
               return (
                 <Popover key={i}>
                   <PopoverTrigger asChild>
-                    <div className={`flex flex-col items-center gap-1 cursor-pointer ${!scheduled ? 'opacity-25' : ''}`}>
-                      <span className='text-xs text-gray-400'>{dayLabels[day.getDay()]}</span>
-                      <div
-                        className='w-8 h-8 rounded-full border flex items-center justify-center text-xs font-medium transition-colors text-white'
-                        style={completed ? { backgroundColor: hex, borderColor: hex } : { borderColor: 'white' }}
-                      >
-                        {day.getDate()}
-                      </div>
+                    <div
+                      className={`flex flex-col items-center justify-center gap-0.5 flex-1 py-3 cursor-pointer transition-all hover:brightness-110 ${!scheduled ? 'opacity-25' : ''}`}
+                      style={completed
+                        ? { backgroundColor: hex }
+                        : { backgroundColor: `${hex}25`, borderTop: `2px solid ${hex}` }
+                      }
+                    >
+                      <span className='text-[10px] font-medium' style={{ color: completed ? 'rgba(255,255,255,0.7)' : hex }}>{dayLabels[day.getDay()]}</span>
+                      <span className='text-sm font-bold text-white'>{day.getDate()}</span>
                     </div>
                   </PopoverTrigger>
                   <PopoverContent className='w-40 rounded p-2 bg-gray-900 border border-gray-700'>
@@ -274,17 +278,18 @@ export default function HabitCard({ habitId, habitName, habitDesc, entries, sche
             }
 
             return (
-              <div key={i} className={`flex flex-col items-center gap-1 ${!scheduled ? 'opacity-25' : ''}`}>
-                <span className='text-xs text-gray-400'>{dayLabels[day.getDay()]}</span>
-                <div
-                  className='w-8 h-8 rounded-full border flex items-center justify-center text-xs font-medium'
-                  style={completed
-                    ? { backgroundColor: hex, borderColor: hex, color: 'white' }
-                    : { borderColor: '#4b5563', color: '#6b7280' }
-                  }
+              <div
+                key={i}
+                className={`flex flex-col items-center justify-center gap-0.5 flex-1 py-3 ${!scheduled ? 'opacity-25' : ''}`}
+                style={completed ? { backgroundColor: `${hex}60` } : { backgroundColor: 'transparent' }}
+              >
+                <span className='text-[10px] text-gray-500'>{dayLabels[day.getDay()]}</span>
+                <span
+                  className='text-sm font-bold'
+                  style={{ color: completed ? 'white' : '#4b5563' }}
                 >
                   {day.getDate()}
-                </div>
+                </span>
               </div>
             );
           })}

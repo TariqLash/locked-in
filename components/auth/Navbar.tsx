@@ -33,7 +33,7 @@ const Navbar = async ({ hideSettings, backHref, backHrefRight }: { hideSettings?
   );
 
   return (
-    <nav className='sticky top-0 navBorder w-full flex justify-between items-center h-14 px-8 bg-gray-950 '>
+    <nav className='sticky top-0 navBorder w-full flex justify-between items-center h-14 px-8 bg-[#020408]'>
       <div className='flex items-center gap-3 w-32'>
         {backHref ? (
           <Link href={backHref} className='text-gray-400 hover:text-white transition-colors'>
