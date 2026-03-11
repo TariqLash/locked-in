@@ -12,7 +12,6 @@ type Props = {
 export default function SettingsClient({ firstName, lastName, email, hasPassword }: Props) {
   const [editFirst, setEditFirst] = useState(firstName);
   const [editLast, setEditLast] = useState(lastName);
-  const [displayName, setDisplayName] = useState({ first: firstName, last: lastName });
   const [profileMsg, setProfileMsg] = useState('');
 
   const [currentPw, setCurrentPw] = useState('');
@@ -23,7 +22,6 @@ export default function SettingsClient({ firstName, lastName, email, hasPassword
 
   const handleProfileSave = (e: React.FormEvent) => {
     e.preventDefault();
-    setDisplayName({ first: editFirst, last: editLast });
     setProfileMsg('Saved!');
     updateProfile(editFirst, editLast);
     setTimeout(() => setProfileMsg(''), 2000);
@@ -40,9 +38,9 @@ export default function SettingsClient({ firstName, lastName, email, hasPassword
       setPwMsg('Password updated!');
       setCurrentPw(''); setNewPw(''); setConfirmPw('');
       setTimeout(() => setPwMsg(''), 3000);
-    } catch (err: any) {
+    } catch (err: unknown) {
       setPwError(true);
-      setPwMsg(err.message || 'Failed to update password');
+      setPwMsg(err instanceof Error ? err.message : 'Failed to update password');
     }
   };
 

@@ -3,7 +3,7 @@ import React from 'react'
 import { Dialog, DialogContent, DialogTrigger } from '@/components/ui/dialog'
 import Heatmap from './Heatmap'
 import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from 'recharts'
-import { getEarnedBadges, getNextBadge, BADGES } from '@/lib/badges'
+import { getNextBadge, BADGES } from '@/lib/badges'
 
 type Entry = { date: string; completed: boolean };
 

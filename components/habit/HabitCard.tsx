@@ -94,9 +94,6 @@ export default function HabitCard({ habitId, habitName, habitDesc, entries, sche
   const bestStreak = calculateBestStreak(localEntries);
   const earnedBadges = getEarnedBadges(bestStreak);
   const nextBadge = getNextBadge(bestStreak);
-  const todayScheduled = schedule.includes(today.getDay());
-  const todayCompleted = localEntries.some(e => e.completed && new Date(e.date).toDateString() === today.toDateString());
-  const actionPending = todayScheduled && !todayCompleted;
   const consistencyPercentage = localEntries.length > 0
     ? Math.round((totalCheckIns / localEntries.length) * 100)
     : 0;
@@ -150,7 +147,7 @@ export default function HabitCard({ habitId, habitName, habitDesc, entries, sche
       >
         {/* Colored drag strip */}
         <div
-          {...(dragListeners as any)}
+          {...(dragListeners as Record<string, unknown>)}
           onClick={stop}
           className='flex items-center justify-center w-9 flex-shrink-0 cursor-grab active:cursor-grabbing'
           style={{ backgroundColor: `${hex}30` }}
