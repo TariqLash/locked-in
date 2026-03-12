@@ -8,6 +8,26 @@ import { compare } from "bcryptjs";
 export const { handlers, signIn, signOut, auth } = NextAuth({
   trustHost: true,
   secret: process.env.AUTH_SECRET ?? process.env.NEXTAUTH_SECRET ?? process.env.NEXT_PUBLIC_SECRET,
+  cookies: {
+    pkceCodeVerifier: {
+      name: "authjs.pkce.code_verifier",
+      options: {
+        httpOnly: true,
+        sameSite: "none" as const,
+        path: "/",
+        secure: true,
+      },
+    },
+    state: {
+      name: "authjs.state",
+      options: {
+        httpOnly: true,
+        sameSite: "none" as const,
+        path: "/",
+        secure: true,
+      },
+    },
+  },
   providers: [
     Google({
       clientId: process.env.GOOGLE_CLIENT_ID,
