@@ -4,8 +4,6 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import React, { useState } from 'react';
 
-const DAY_LABELS = ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'];
-
 const COLORS = [
   { id: 'green',  bg: 'bg-green-500',  label: 'Green' },
   { id: 'blue',   bg: 'bg-blue-500',   label: 'Blue' },
@@ -18,25 +16,16 @@ const COLORS = [
 export default function AddHabitForm() {
   const [habitName, setHabitName] = useState('');
   const [description, setDescription] = useState('');
-  const [schedule, setSchedule] = useState<number[]>([0,1,2,3,4,5,6]);
   const [color, setColor] = useState('green');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
-
-  const toggleDay = (day: number) => {
-    setSchedule(prev =>
-      prev.includes(day)
-        ? prev.length > 1 ? prev.filter(d => d !== day) : prev
-        : [...prev, day]
-    );
-  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!habitName.trim()) { setError('Please enter a habit name'); return; }
     setLoading(true);
     setError('');
-    await addHabit(habitName.trim(), description.trim(), schedule, color);
+    await addHabit(habitName.trim(), description.trim(), [0,1,2,3,4,5,6], color);
   };
 
   return (
@@ -68,34 +57,6 @@ export default function AddHabitForm() {
               maxLength={50}
             />
           </div>
-        </section>
-
-        {/* Schedule */}
-        <section className='bg-gray-950 border border-gray-800 rounded-xl p-6'>
-          <h2 className='text-sm font-semibold text-gray-400 mb-1'>Schedule</h2>
-          <p className='text-xs text-gray-600 mb-4'>Which days should this habit repeat?</p>
-          <div className='flex justify-between gap-1'>
-            {DAY_LABELS.map((label, i) => {
-              const active = schedule.includes(i);
-              return (
-                <button
-                  key={i}
-                  type='button'
-                  onClick={() => toggleDay(i)}
-                  className={`flex-1 h-10 rounded-lg text-xs font-medium transition-colors border
-                    ${active
-                      ? 'bg-white text-black border-white'
-                      : 'bg-transparent text-gray-500 border-gray-700 hover:border-gray-500'
-                    }`}
-                >
-                  {label}
-                </button>
-              );
-            })}
-          </div>
-          <p className='text-xs text-gray-600 mt-3'>
-            {schedule.length === 7 ? 'Every day' : `${schedule.length}x per week`}
-          </p>
         </section>
 
         {/* Color */}

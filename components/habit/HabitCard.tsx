@@ -60,15 +60,23 @@ export default function HabitCard({ habitId, habitName, habitDesc, entries, sche
 
   const calculateStreak = (entries: { date: string; completed: boolean }[]) => {
     if (!entries || entries.length === 0) return 0;
-    const sorted = [...entries].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+    const completed = entries.filter(e => e.completed);
+    if (!completed.length) return 0;
+    const sorted = [...completed].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+    const yesterday = new Date(today);
+    yesterday.setDate(today.getDate() - 1);
+    const mostRecent = new Date(sorted[0].date).toDateString();
+    if (mostRecent !== today.toDateString() && mostRecent !== yesterday.toDateString()) return 0;
     let streak = 0;
     const cur = new Date(sorted[0].date);
+    cur.setHours(0, 0, 0, 0);
     for (const entry of sorted) {
       const d = new Date(entry.date);
-      if (entry.completed && d.toDateString() === cur.toDateString()) {
+      d.setHours(0, 0, 0, 0);
+      if (d.getTime() === cur.getTime()) {
         streak++;
         cur.setDate(cur.getDate() - 1);
-      } else if (d.toDateString() !== cur.toDateString()) break;
+      } else break;
     }
     return streak;
   };
@@ -90,6 +98,7 @@ export default function HabitCard({ habitId, habitName, habitDesc, entries, sche
   };
 
   const streakCount = calculateStreak(localEntries);
+  const todayChecked = localEntries.some(e => e.completed && new Date(e.date).toDateString() === today.toDateString());
   const totalCheckIns = localEntries.filter(e => e.completed).length;
   const bestStreak = calculateBestStreak(localEntries);
   const earnedBadges = getEarnedBadges(bestStreak);
@@ -224,9 +233,12 @@ export default function HabitCard({ habitId, habitName, habitDesc, entries, sche
           </div>
         </CardHeader>
 
-        <CardContent className='flex w-full justify-between px-16'>
+        <CardContent className='flex w-full justify-between items-center px-16 py-2'>
           <div className='flex flex-col items-center'>
-            <h2 className='text-5xl font-bold'>{streakCount}</h2>
+            <h2
+              className='text-5xl font-bold transition-colors duration-500'
+              style={{ color: todayChecked ? hex : 'white' }}
+            >{streakCount}</h2>
             <CardDescription>Streak</CardDescription>
           </div>
           <div className='flex flex-col items-center'>
@@ -278,20 +290,14 @@ export default function HabitCard({ habitId, habitName, habitDesc, entries, sche
               <div
                 key={i}
                 className={`flex flex-col items-center justify-center gap-0.5 flex-1 py-3 ${!scheduled ? 'opacity-25' : ''}`}
-                style={completed
-                  ? { backgroundColor: `${hex}40`, borderTop: `2px solid ${hex}90` }
-                  : { backgroundColor: 'transparent', borderTop: '2px solid transparent' }
-                }
+                style={completed ? { backgroundColor: `${hex}60` } : { backgroundColor: '#1f293780' }}
               >
-                <span className='text-[10px]' style={{ color: completed ? hex : '#4b5563' }}>{dayLabels[day.getDay()]}</span>
+                <span className='text-[10px]' style={{ color: completed ? 'rgba(255,255,255,0.7)' : '#4b5563' }}>{dayLabels[day.getDay()]}</span>
                 <span
                   className='text-sm font-bold'
-                  style={{ color: completed ? 'white' : '#374151' }}
+                  style={{ color: completed ? 'white' : '#4b5563' }}
                 >
                   {day.getDate()}
-                </span>
-                <span className='text-[9px]' style={{ color: completed ? hex : '#1f2937' }}>
-                  {completed ? '✓' : scheduled ? '·' : ''}
                 </span>
               </div>
             );

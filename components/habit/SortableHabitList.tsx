@@ -1,5 +1,6 @@
 "use client";
 import React, { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import {
   DndContext,
   closestCenter,
@@ -57,6 +58,7 @@ function SortableHabitItem({ habit, onDelete }: { habit: Habit; onDelete: () => 
 export default function SortableHabitList({ habits }: { habits: Habit[] }) {
   const [items, setItems] = useState(habits);
   const [activeId, setActiveId] = useState<string | null>(null);
+  const router = useRouter();
 
   const sensors = useSensors(useSensor(PointerSensor, {
     activationConstraint: { distance: 8 },
@@ -64,7 +66,7 @@ export default function SortableHabitList({ habits }: { habits: Habit[] }) {
 
   const handleDelete = (habitId: string) => {
     setItems(prev => prev.filter(h => h.habitId !== habitId));
-    deleteHabit(habitId);
+    deleteHabit(habitId).then(() => router.refresh());
   };
 
   const handleDragStart = (event: DragStartEvent) => {
