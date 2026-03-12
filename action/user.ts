@@ -6,7 +6,6 @@ import { Habit } from "@/models/Habit";
 import { HabitEntry } from "@/models/HabitEntry";
 import { redirect } from "next/navigation";
 import { hash, compare } from "bcryptjs";
-import { CredentialsSignin } from "next-auth";
 import { signIn, signOut } from "@/auth";
 import { getSession } from "@/lib/getSession";
 
@@ -24,8 +23,10 @@ const login = async (formData: FormData) => {
       password,
     });
   } catch (error) {
-    const someError = error as CredentialsSignin;
-    return someError.cause;
+    if (error instanceof Error) {
+      return { error: error.message };
+    }
+    return { error: "Invalid credentials" };
   }
 
   redirect("/");

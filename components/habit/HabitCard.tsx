@@ -278,14 +278,20 @@ export default function HabitCard({ habitId, habitName, habitDesc, entries, sche
               <div
                 key={i}
                 className={`flex flex-col items-center justify-center gap-0.5 flex-1 py-3 ${!scheduled ? 'opacity-25' : ''}`}
-                style={completed ? { backgroundColor: `${hex}60` } : { backgroundColor: 'transparent' }}
+                style={completed
+                  ? { backgroundColor: `${hex}40`, borderTop: `2px solid ${hex}90` }
+                  : { backgroundColor: 'transparent', borderTop: '2px solid transparent' }
+                }
               >
-                <span className='text-[10px] text-gray-500'>{dayLabels[day.getDay()]}</span>
+                <span className='text-[10px]' style={{ color: completed ? hex : '#4b5563' }}>{dayLabels[day.getDay()]}</span>
                 <span
                   className='text-sm font-bold'
-                  style={{ color: completed ? 'white' : '#4b5563' }}
+                  style={{ color: completed ? 'white' : '#374151' }}
                 >
                   {day.getDate()}
+                </span>
+                <span className='text-[9px]' style={{ color: completed ? hex : '#1f2937' }}>
+                  {completed ? '✓' : scheduled ? '·' : ''}
                 </span>
               </div>
             );
